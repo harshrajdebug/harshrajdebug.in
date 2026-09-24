@@ -14,7 +14,7 @@ const panel = document.getElementById("panel");
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const COL = {
-  bg: 0x0d1016, ground: 0x0f131a, slab: 0x1c2330, body: 0x28303e, dark: 0x1a202b,
+  bg: 0x151b26, ground: 0x141a24, slab: 0x2b3444, body: 0x363f50, dark: 0x252c39,
   wood: 0x2a2621, ring: 0x9db4ff, seal: 0xf2c46d, reject: 0xff6a5c, idle: 0x39414f, pod: 0x6d7892,
 };
 
@@ -31,7 +31,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.45;
+renderer.toneMappingExposure = 1.7;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(COL.bg);
@@ -39,8 +39,9 @@ scene.fog = new THREE.Fog(COL.bg, 18, 38);
 const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
 
 // moonlight, a faint sky fill, and one warm lamp on the desk
-scene.add(new THREE.HemisphereLight(0xa9bbe0, 0x0b0d12, 1.0));
-const moon = new THREE.DirectionalLight(0xc9d6ff, 1.7);
+scene.add(new THREE.HemisphereLight(0xc4d2f0, 0x1a1f2a, 1.6));
+scene.add(new THREE.AmbientLight(0x8090b0, 0.35));
+const moon = new THREE.DirectionalLight(0xd2ddff, 2.2);
 moon.position.set(-7, 11, 7);
 moon.castShadow = true;
 moon.shadow.mapSize.set(2048, 2048);
@@ -48,7 +49,7 @@ Object.assign(moon.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near
 moon.shadow.bias = -0.0004;
 moon.shadow.radius = 4;
 scene.add(moon);
-const rim = new THREE.DirectionalLight(0x9db4ff, 0.35);
+const rim = new THREE.DirectionalLight(0x9db4ff, 0.6);
 rim.position.set(6, 4, -8);
 scene.add(rim);
 
@@ -80,7 +81,7 @@ scene.add(slab);
 
 // ---------- the room: two walls, a window, a few quiet details ----------
 {
-  const wallMat = mat(0x222a38);
+  const wallMat = mat(0x2f3848);
   const wall = (w, h, d, x, y, z) => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
     m.position.set(x, y, z); m.receiveShadow = true; scene.add(m); return m;
@@ -115,7 +116,7 @@ scene.add(slab);
   const moonHalo = new THREE.Mesh(new THREE.CircleGeometry(0.3, 32), new THREE.MeshBasicMaterial({ color: 0x9db4ff, transparent: true, opacity: 0.12, toneMapped: false, fog: false, depthWrite: false }));
   moonHalo.position.set(2.3, 3.28, BZ - 0.34); scene.add(moonHalo);
   // a little moonlight falling in through the window
-  const spill = new THREE.SpotLight(0xb9c8ff, 9, 9, 0.5, 0.8, 1.6);
+  const spill = new THREE.SpotLight(0xb9c8ff, 14, 10, 0.5, 0.8, 1.6);
   spill.position.set(1.9, 3.4, BZ - 0.6); spill.target.position.set(1.4, 0, -0.4);
   scene.add(spill, spill.target);
 
@@ -254,7 +255,7 @@ let screenTex, screenCtx;
   const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), glow(0xffe2b0));
   bulb.position.set(0.83, 1.63, -0.3);
   desk.add(bulb);
-  const lamp = new THREE.PointLight(0xffc98a, 5.5, 5.5, 1.8);
+  const lamp = new THREE.PointLight(0xffc98a, 8, 7, 1.8);
   lamp.position.set(0.8, 1.55, -0.28);
   lamp.castShadow = true;
   lamp.shadow.mapSize.set(512, 512);
