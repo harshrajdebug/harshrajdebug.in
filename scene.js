@@ -782,7 +782,7 @@ const cat = new THREE.Group();
 const CAT = {};
 {
   scene.add(cat);
-  cat.position.set(0.7, 0, -1.15);
+  cat.position.set(-1.2, 0, -0.4);
   const furP = mat(0xd08b45, { roughness: 1 }), furD = mat(0xa9642c, { roughness: 1 }), cream = mat(0xf0dcc0, { roughness: 1 });
   const body = new THREE.Group(); cat.add(body);
   const trunk = mesh(new THREE.CapsuleGeometry(0.1, 0.26, 6, 16), furP, body, 0, 0, 0, 0, 0, Math.PI / 2);
@@ -835,8 +835,8 @@ const CAT = {};
     limb(j, new THREE.Vector3(0, 0, 0), new THREE.Vector3(-0.045, 0, 0), 0.02 - i * 0.0009, i === 9 ? furD : i % 3 === 1 ? furD : furP);
     tail.push(j); parent = j; pos = new THREE.Vector3(-0.045, 0, 0);
   }
-  Object.assign(CAT, { body, head, eyes, legs, tail, state: "loaf", timer: 7, target: null, yaw: 2.4, phase: 0, walk: 0, blink: 2,
-    pose: { y: 0.11, pitch: 0, front: 1, rear: 1, sit: 0, headY: -0.06, headPitch: -0.3, eyes: 0.08, tailBase: 0.25, tailCurl: 0, tailWrap: 1 } });
+  Object.assign(CAT, { body, head, eyes, legs, tail, state: "walk", timer: 0, target: new THREE.Vector3(2.9, 0, -0.2), yaw: 0.2, phase: 0, walk: 0, blink: 2,
+    pose: { y: 0.245, pitch: 0, front: 0, rear: 0, sit: 0, headY: 0, headPitch: 0, eyes: 1, tailBase: -1.15, tailCurl: 0.09, tailWrap: 0 } });
   cat.rotation.y = CAT.yaw;
 }
 // open floor the cat may use: clear of the desk, chair, rack, shelves, belt and mailbox
@@ -864,7 +864,7 @@ function stepCat(dt, t) {
     c.walk += (Math.min(1, speed * 4) - c.walk) * Math.min(1, dt * 6);
     if (dist < 0.06) {
       const r = rnd();
-      if (c.napNext) { c.state = "loaf"; c.timer = 12 + rnd() * 10; c.napNext = false; }
+      if (c.napNext) { c.state = "loaf"; c.timer = 7 + rnd() * 5; c.napNext = false; }
       else if (r < 0.45) { c.state = "sit"; c.timer = 3 + rnd() * 5; }
       else pickTarget();
     }
@@ -910,7 +910,7 @@ function stepCat(dt, t) {
 }
 function pickTarget() {
   const c = CAT;
-  if (rnd() < 0.25) { c.target = NAP.clone(); c.napNext = true; }
+  if (rnd() < 0.12) { c.target = NAP.clone(); c.napNext = true; }
   else {
     const A = CAT_AREA;
     c.target = new THREE.Vector3(A.x0 + rnd() * (A.x1 - A.x0), 0, A.z0 + rnd() * (A.z1 - A.z0));
@@ -989,6 +989,7 @@ const VIEWS = {
 };
 let narrow = false;
 function view(key) {
+  if (!VIEWS[key]) key = "home";
   const [p, t] = VIEWS[key];
   const pos = p.clone(), tgt = t.clone();
   if (key === "home") {
