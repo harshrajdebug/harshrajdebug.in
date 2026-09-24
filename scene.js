@@ -453,48 +453,50 @@ const steam = [];
   }
   mesh(bgeo(2.44, 0.05, 0.04), leg, desk, 0, 0.85, -0.45);
 
-  // desk mat, keyboard with real keycaps, mouse
-  mesh(bgeo(1.5, 0.008, 0.5), mat(0x1c212b, { roughness: 1 }), desk, -0.1, 1.06, 0.2);
-  const kb = new THREE.Group(); kb.position.set(-0.2, 1.064, 0.22); desk.add(kb);
-  mesh(rbox(0.86, 0.035, 0.3, 0.012), mat(0x2b303a, { metalness: 0.2 }), kb, 0, 0.018, 0, -0.05);
+  // laptop: aluminium body, black keys, trackpad, thin-bezel screen with a notch
+  const lt = new THREE.Group(); lt.position.set(-0.15, 1.055, 0.3); desk.add(lt);
+  const alu = mat(0xc4c8cf, { metalness: 0.75, roughness: 0.32 }), aluDark = mat(0xa9aeb6, { metalness: 0.7, roughness: 0.3 });
+  const LW = 0.62, LD = 0.43, LH = 0.022;
+  mesh(rbox(LW, LH, LD, 0.012), alu, lt, 0, LH / 2, 0);
+  mesh(bgeo(LW - 0.05, 0.001, 0.215), mat(0x1a1c21, { roughness: 0.6 }), lt, 0, LH + 0.0005, -0.085, 0, 0, 0, false); // keyboard well
   const keys = [];
-  const P = 0.054, S = 0.046;
-  [[1, 15], [1.5, 13], [1.75, 12], [2.25, 11]].forEach(([first, count], r) => {
-    let x = -0.39;
-    const z = -0.1 + r * P;
-    const w0 = first * S + (first - 1) * (P - S);
-    keys.push([x + w0 / 2, z, w0, r === 0 ? "esc" : ""]); x += w0 + (P - S);
-    for (let k = 0; k < count - 1; k++) { keys.push([x + S / 2, z, S, ""]); x += P; }
-    const rest = 0.39 - x;
-    if (rest > 0.03) keys.push([x + rest / 2, z, rest, r === 2 ? "enter" : ""]);
-  });
-  [[0.07, ""], [0.07, ""], [0.07, ""], [0.34, "space"], [0.07, ""], [0.07, ""], [0.07, ""]].reduce((x, [w, tag]) => { keys.push([x + w / 2, -0.1 + 4 * P, w, tag]); return x + w + (P - S); }, -0.39);
-  const caps = new THREE.InstancedMesh(rbox(1, 0.022, 0.046, 0.006, 2), mat(0xffffff, { roughness: 0.55 }), keys.length);
-  caps.castShadow = true;
+  const P = 0.038, S = 0.032, z0 = -0.175;
+  for (let r = 0; r < 5; r++) {
+    const n = r === 0 ? 14 : 13, w0 = r === 0 ? S : r === 1 ? S * 1.45 : r === 2 ? S * 1.7 : S * 2.2;
+    let x = -0.27;
+    keys.push([x + w0 / 2, z0 + r * P, w0, r === 0 ? "esc" : ""]); x += w0 + (P - S);
+    for (let k = 1; k < n - 1; k++) { if (x + S > 0.27) break; keys.push([x + S / 2, z0 + r * P, S, ""]); x += P; }
+    const rest = 0.27 - x;
+    if (rest > 0.02) keys.push([x + rest / 2, z0 + r * P, rest, r === 2 ? "enter" : ""]);
+  }
+  [[S, ""], [S, ""], [S * 1.2, ""], [0.21, "space"], [S * 1.2, ""], [S, ""], [S, ""]].reduce((x, [w, tag]) => { keys.push([x + w / 2, z0 + 5 * P, w, tag]); return x + w + (P - S); }, -0.27);
+  const caps = new THREE.InstancedMesh(rbox(1, 0.004, 0.032, 0.004, 1), mat(0x0f1014, { roughness: 0.5 }), keys.length);
   const d = new THREE.Object3D();
   keys.forEach(([x, z, w, tag], i) => {
-    d.position.set(x, 0.045 - z * 0.05, z); d.rotation.x = -0.05; d.scale.set(w, 1, 1); d.updateMatrix();
+    d.position.set(x, LH + 0.003, z); d.scale.set(w, 1, 1); d.updateMatrix();
     caps.setMatrixAt(i, d.matrix);
-    caps.setColorAt(i, new THREE.Color(tag === "esc" ? COL.seal : tag === "enter" ? COL.ring : tag === "space" ? 0x4a5264 : 0x3b4252));
+    caps.setColorAt(i, new THREE.Color(tag === "esc" ? 0x2a2418 : 0x121317));
   });
-  kb.add(caps);
-  const mouse = mesh(sgeo(0.05, 16, 12), mat(0x2b303a, { roughness: 0.4 }), desk, 0.42, 1.08, 0.24);
-  mouse.scale.set(0.75, 0.45, 1.15);
-  mesh(bgeo(0.006, 0.004, 0.03), glow(0x9db4ff), desk, 0.42, 1.103, 0.215, 0, 0, 0, false);
-
-  // monitor with bezel, stand and a sticky note
-  const mon = new THREE.Group(); mon.position.set(-0.2, 0, -0.25); desk.add(mon);
-  const monM = mat(0x1d2129, { metalness: 0.5, roughness: 0.4 });
-  mesh(rbox(0.46, 0.02, 0.26, 0.01), monM, mon, 0, 1.065, 0);
-  mesh(rbox(0.08, 0.42, 0.04, 0.015), monM, mon, 0, 1.28, -0.05, -0.12);
-  mesh(rbox(1.42, 0.86, 0.05, 0.02), mat(0x15181f, { metalness: 0.3, roughness: 0.4 }), mon, 0, 1.82, 0);
-  mesh(rbox(0.5, 0.36, 0.08, 0.04), mat(0x15181f), mon, 0, 1.8, -0.06);
-  const c = document.createElement("canvas"); c.width = 700; c.height = 400;
+  caps.receiveShadow = true;
+  lt.add(caps);
+  for (const sx of [-1, 1]) mesh(bgeo(0.012, 0.001, 0.2), mat(0x2b2e35), lt, sx * 0.3, LH + 0.0005, -0.085, 0, 0, 0, false); // speaker grilles
+  mesh(rbox(0.25, 0.002, 0.15, 0.01), aluDark, lt, 0, LH + 0.001, 0.125, 0, 0, 0, false); // trackpad
+  mesh(bgeo(0.08, 0.004, 0.006), aluDark, lt, 0, 0.012, LD / 2 + 0.001, 0, 0, 0, false); // thumb notch
+  // the lid, hinged at the back edge and tilted open
+  const lid = new THREE.Group(); lid.position.set(0, LH, -LD / 2 + 0.008); lid.rotation.x = -0.26; lt.add(lid);
+  const LHt = 0.4;
+  mesh(rbox(LW, LHt, 0.012, 0.012), alu, lid, 0, LHt / 2, -0.004);
+  mesh(bgeo(LW - 0.006, LHt - 0.006, 0.002), mat(0x08090b, { roughness: 0.3 }), lid, 0, LHt / 2, 0.003, 0, 0, 0, false); // black glass
+  mesh(rbox(0.07, 0.016, 0.003, 0.006), mat(0x08090b), lid, 0, LHt - 0.013, 0.005, 0, 0, 0, false); // notch
+  mesh(cgeo(0.011, 0.011, LW - 0.12, 12), mat(0x2b2e35, { metalness: 0.5 }), lt, 0, LH + 0.004, -LD / 2 + 0.006, 0, 0, Math.PI / 2); // hinge
+  const c = document.createElement("canvas"); c.width = 700; c.height = 456;
   screenCtx = c.getContext("2d");
   screenTex = new THREE.CanvasTexture(c); screenTex.colorSpace = THREE.SRGBColorSpace;
-  mesh(new THREE.PlaneGeometry(1.34, 0.77), glow(0xffffff, { map: screenTex }), mon, 0, 1.83, 0.027, 0, 0, 0, false);
-  mesh(new THREE.PlaneGeometry(0.1, 0.1), mat(0xf2d46d), mon, 0.62, 1.63, 0.03, 0, 0, 0.08, false);
-  mesh(sgeo(0.006, 6, 4), glow(0x6fe0a0), mon, 0.6, 1.415, 0.028, 0, 0, 0, false); // power led
+  mesh(new THREE.PlaneGeometry(LW - 0.03, LHt - 0.03), glow(0xffffff, { map: screenTex }), lid, 0, LHt / 2 - 0.004, 0.0045, 0, 0, 0, false);
+  const screenGlow = new THREE.PointLight(0x9db4ff, 1.4, 1.6, 2);
+  screenGlow.position.set(0, 0.2, 0.25); lid.add(screenGlow);
+  // sticky note on the desk beside the laptop
+  mesh(bgeo(0.1, 0.002, 0.1), mat(0xf2d46d), desk, 0.35, 1.057, 0.42, 0, 0.3, 0, false);
 
   // lamp with an articulated arm
   const lp = new THREE.Group(); lp.position.set(1.02, 1.055, -0.3); desk.add(lp);
@@ -574,10 +576,10 @@ const steam = [];
   }
   // arms reaching the keyboard (keyboard top sits ~0.37 above the seat, ~0.73 in front)
   const hands = [];
-  // keycap tops in torso space: desk group y 1.064 + cap centre 0.045 + half cap 0.011, minus seat 0.71 and torso 0.14
-  const KEYTOP = 1.064 + 0.045 + 0.011 - 0.71 - 0.14;
+  // laptop key tops in torso space: desk 1.055 + body 0.022 + key 0.005, minus seat 0.71 and torso 0.14
+  const KEYTOP = 1.055 + 0.022 + 0.005 - 0.71 - 0.14;
   for (const s of [-1, 1]) {
-    const sh = V(s * 0.25, 0.49, 0.0), el = V(s * 0.3, 0.27, -0.25), wr = V(s * 0.14, 0.305, -0.6);
+    const sh = V(s * 0.25, 0.49, 0.0), el = V(s * 0.29, 0.22, -0.25), wr = V(s * 0.13, 0.255, -0.64);
     limb(torso, sh, el, 0.062, hood);
     limb(torso, el, wr, 0.052, hood);
     mesh(sgeo(0.05, 12, 10), hood, torso, sh.x, sh.y, sh.z);
@@ -598,7 +600,7 @@ const steam = [];
   }
   person.userData = { torso, chest, head, hands, baseY: hands.map((h) => h.position.y) };
 }
-target(desk, "about", "About", new THREE.Vector3(1.4, 2.75, -2.9));
+target(desk, "about", "About", new THREE.Vector3(1.6, 2.45, -2.9));
 
 // The terminal types a short loop of commands. The findings table is read from
 // the page, so it shows the same live PR states as the rack and the panel.
@@ -641,13 +643,13 @@ const isTyping = () => !!SCRIPT[term.step].cmd && term.wait <= 0;
 let cursorOn = true;
 function drawScreen() {
   const g = screenCtx, W = 700;
-  g.fillStyle = "#0a0e15"; g.fillRect(0, 0, W, 400);
+  g.fillStyle = "#0a0e15"; g.fillRect(0, 0, W, 456);
   g.fillStyle = "#141a24"; g.fillRect(0, 0, W, 26);
   ["#e07a5f", "#f2c46d", "#6fb38b"].forEach((col, i) => { g.fillStyle = col; g.beginPath(); g.arc(18 + i * 18, 13, 5, 0, Math.PI * 2); g.fill(); });
-  g.fillStyle = "#6c7891"; g.font = "500 14px 'IBM Plex Mono', Menlo, monospace"; g.textBaseline = "middle"; g.fillText("harsh@room: ~", 300, 13);
+  g.fillStyle = "#6c7891"; g.font = "500 14px 'IBM Plex Mono', Menlo, monospace"; g.textBaseline = "middle"; g.fillText("harsh@room: ~", 88, 13); // clear of the notch
   g.font = "500 21px 'IBM Plex Mono', Menlo, monospace";
   g.textBaseline = "top";
-  const lh = 30, lines = term.lines.slice(-11);
+  const lh = 30, lines = term.lines.slice(-13);
   let y = 40, lastX = 30;
   lines.forEach(([p, txt]) => {
     g.fillStyle = "#f2c46d"; g.fillText(p, 30, y);
