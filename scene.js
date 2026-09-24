@@ -523,7 +523,7 @@ const steam = [];
   mesh(rbox(LW, LHt, 0.007, 0.014, 4), alu, lid, 0, LHt / 2, -0.004);
   mesh(rbox(LW - 0.003, LHt - 0.003, 0.002, 0.013, 2), blackGlass, lid, 0, LHt / 2, 0.0005, 0, 0, 0, false);
   mesh(cgeo(0.0075, 0.0075, LW - 0.09, 16), mat(0x17181b, { roughness: 0.4 }), lt, 0, LH + 0.001, -LD / 2 + 0.004, 0, 0, Math.PI / 2); // hinge
-  const c = document.createElement("canvas"); c.width = 700; c.height = 456;
+  const c = document.createElement("canvas"); c.width = 1400; c.height = 912; // drawn at 2x for sharp text
   screenCtx = c.getContext("2d");
   screenTex = new THREE.CanvasTexture(c); screenTex.colorSpace = THREE.SRGBColorSpace; screenTex.anisotropy = 8;
   const SW = LW - 0.024, SH = LHt - 0.034;
@@ -531,7 +531,7 @@ const steam = [];
   mesh(rbox(0.07, 0.017, 0.001, 0.005, 1), glow(0x050607), lid, 0, LHt - 0.02, 0.0023, 0, 0, 0, false); // notch
   mesh(sgeo(0.0028, 8, 6), mat(0x1f2a3a, { roughness: 0.05, metalness: 0.6 }), lid, 0, LHt - 0.017, 0.0032, 0, 0, 0, false); // camera
   // a faint diagonal glare across the glass
-  const glare = canvasTex(256, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0.2, "rgba(255,255,255,0)"); gr.addColorStop(0.42, "rgba(255,255,255,.10)"); gr.addColorStop(0.5, "rgba(255,255,255,0)"); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const glare = canvasTex(256, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0.2, "rgba(255,255,255,0)"); gr.addColorStop(0.42, "rgba(255,255,255,.045)"); gr.addColorStop(0.5, "rgba(255,255,255,0)"); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
   mesh(new THREE.PlaneGeometry(SW, SH), new THREE.MeshBasicMaterial({ map: glare, transparent: true, depthWrite: false, toneMapped: false }), lid, 0, LHt / 2 - 0.006, 0.0026, 0, 0, 0, false);
   const screenGlow = new THREE.PointLight(0xa9bbff, 1.6, 1.7, 2);
   screenGlow.position.set(0, 0.22, 0.28); lid.add(screenGlow);
@@ -694,6 +694,7 @@ function drawScreen() {
     w.globalAlpha = 0.25; w.fillStyle = "#9db4ff"; w.beginPath(); w.ellipse(W * 0.15, H * 0.2, 240, 110, 0.4, 0, Math.PI * 2); w.fill();
     w.globalAlpha = 1;
   }
+  g.setTransform(2, 0, 0, 2, 0, 0);
   g.drawImage(wallpaper, 0, 0);
   // menu bar (the notch sits over its centre)
   g.fillStyle = "rgba(10,12,20,.55)"; g.fillRect(0, 0, W, 20);
@@ -705,36 +706,37 @@ function drawScreen() {
   const hh = now.getHours() % 12 || 12, mm = String(now.getMinutes()).padStart(2, "0");
   g.textAlign = "right"; g.fillText(`${now.toLocaleDateString("en-US", { weekday: "short" })} ${hh}:${mm}`, W - 14, 10); g.textAlign = "left";
   // terminal window
-  const X = 44, Y = 34, WW = 612, WH = 336;
+  const X = 20, Y = 28, WW = 660, WH = 372;
   g.save(); g.shadowColor = "rgba(0,0,0,.45)"; g.shadowBlur = 24; g.shadowOffsetY = 10;
-  roundRect(g, X, Y, WW, WH, 12); g.fillStyle = "#0b0f17"; g.fill(); g.restore();
+  roundRect(g, X, Y, WW, WH, 12); g.fillStyle = "#080b12"; g.fill(); g.restore();
   g.save(); roundRect(g, X, Y, WW, WH, 12); g.clip();
   g.fillStyle = "#1a2030"; g.fillRect(X, Y, WW, 26);
   ["#ff5f57", "#febc2e", "#28c840"].forEach((col, i) => { g.fillStyle = col; g.beginPath(); g.arc(X + 16 + i * 18, Y + 13, 5.5, 0, Math.PI * 2); g.fill(); });
-  g.fillStyle = "#8a93a8"; g.font = "500 12px 'IBM Plex Mono', Menlo, monospace"; g.textAlign = "center"; g.fillText("harsh — zsh — 80×24", X + WW / 2, Y + 13); g.textAlign = "left";
-  g.font = "500 17px 'IBM Plex Mono', Menlo, monospace"; g.textBaseline = "top";
-  const lh = 24, lines = term.lines.slice(-12);
+  g.fillStyle = "#8a93a8"; g.font = "500 12px 'IBM Plex Mono', Menlo, monospace"; g.textAlign = "center"; g.fillText("harsh — zsh", X + WW / 2, Y + 13); g.textAlign = "left";
+  g.font = "600 23px 'IBM Plex Mono', Menlo, monospace"; g.textBaseline = "top";
+  const lh = 31, lines = term.lines.slice(-10);
   let y = Y + 38, lastX = X + 18;
   lines.forEach(([p, txt]) => {
     g.fillStyle = "#f2c46d"; g.fillText(p, X + 18, y);
     const x = X + 18 + g.measureText(p).width;
     if (!p && /\bmerged\b/.test(txt)) g.fillStyle = "#f2c46d";
     else if (!p && /\bopen\b$/.test(txt)) g.fillStyle = "#9db4ff";
-    else g.fillStyle = p ? "#dfe5ef" : "#8f9ab0";
+    else g.fillStyle = p ? "#f2f5fa" : "#b8c2d6";
     g.fillText(txt, x, y);
     lastX = x + g.measureText(txt).width;
     y += lh;
   });
   const typing = isTyping() && term.typed > 0;
-  if (cursorOn || typing) { g.fillStyle = "#dfe5ef"; if (typing) g.fillRect(lastX + 2, y - lh + 2, 9, 18); else g.fillRect(X + 18, y + 2, 9, 18); }
+  if (cursorOn || typing) { g.fillStyle = "#f2f5fa"; if (typing) g.fillRect(lastX + 3, y - lh + 2, 12, 24); else g.fillRect(X + 18, y + 2, 12, 24); }
   g.restore();
   // dock
   const icons = ["#3d8bfd", "#28c840", "#f2c46d", "#b07ce6", "#ff6a5c", "#1c2230"];
   const DW = icons.length * 40 + 16;
-  roundRect(g, (W - DW) / 2, H - 50, DW, 42, 12); g.fillStyle = "rgba(255,255,255,.18)"; g.fill();
-  icons.forEach((c, i) => { roundRect(g, (W - DW) / 2 + 12 + i * 40, H - 45, 32, 32, 8); g.fillStyle = c; g.fill(); });
+  roundRect(g, (W - DW) / 2, H - 46, DW, 40, 12); g.fillStyle = "rgba(255,255,255,.18)"; g.fill();
+  icons.forEach((c, i) => { roundRect(g, (W - DW) / 2 + 12 + i * 40, H - 41, 30, 30, 8); g.fillStyle = c; g.fill(); });
   g.fillStyle = "#e8ebf2"; g.beginPath(); g.arc((W - DW) / 2 + 12 + 5 * 40 + 16, H - 10, 1.6, 0, Math.PI * 2); g.fill(); // terminal is open
   g.fillStyle = "#dfe5ef"; g.font = "600 13px 'IBM Plex Mono', monospace"; g.textBaseline = "middle"; g.fillText(">_", (W - DW) / 2 + 12 + 5 * 40 + 7, H - 29);
+  g.setTransform(1, 0, 0, 1, 0, 0);
   screenTex.needsUpdate = true;
   term.dirty = false;
 }
@@ -1188,7 +1190,7 @@ const VIEWS = {
   // [camera position, look-at target]
   home: [new THREE.Vector3(7.8, 6.1, 9.8), new THREE.Vector3(-0.2, 1.1, -0.6)],
   work: [new THREE.Vector3(0.6, 3.0, 2.6), new THREE.Vector3(-3.0, 1.8, -2.95)],
-  about: [new THREE.Vector3(3.9, 2.5, 1.3), new THREE.Vector3(1.55, 1.35, -2.6)],
+  about: [new THREE.Vector3(2.75, 1.95, -0.7), new THREE.Vector3(1.45, 1.3, -2.65)],
   built: [new THREE.Vector3(0.5, 2.15, 4.7), new THREE.Vector3(-1.7, 1.12, 1.55)],
   contact: [new THREE.Vector3(6.6, 2.5, 5.9), new THREE.Vector3(3.9, 1.2, 2.2)],
 };
