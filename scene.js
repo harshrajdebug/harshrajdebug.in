@@ -556,7 +556,7 @@ const steam = [];
     mesh(rbox(0.12, 0.07, 0.22, 0.03), shoeTop, person, s * 0.13, -0.63, -0.51);
   }
   const torso = new THREE.Group(); torso.position.set(0, 0.14, 0.03); person.add(torso);
-  mesh(rbox(0.46, 0.56, 0.28, 0.1), hood, torso, 0, 0.27, 0, -0.12);
+  const chest = mesh(rbox(0.46, 0.56, 0.28, 0.1), hood, torso, 0, 0.27, 0, -0.12);
   mesh(new THREE.TorusGeometry(0.12, 0.055, 8, 18, Math.PI), hood, torso, 0, 0.53, 0.09, -0.4, 0, Math.PI); // hood
   mesh(bgeo(0.3, 0.12, 0.02), mat(0x43547a), torso, 0, 0.12, -0.14, -0.12, 0, 0, false); // front pocket
   const head = new THREE.Group(); head.position.set(0, 0.64, -0.04); torso.add(head);
@@ -574,14 +574,29 @@ const steam = [];
   }
   // arms reaching the keyboard (keyboard top sits ~0.37 above the seat, ~0.73 in front)
   const hands = [];
+  // keycap tops in torso space: desk group y 1.064 + cap centre 0.045 + half cap 0.011, minus seat 0.71 and torso 0.14
+  const KEYTOP = 1.064 + 0.045 + 0.011 - 0.71 - 0.14;
   for (const s of [-1, 1]) {
-    const sh = V(s * 0.25, 0.49, 0.0), el = V(s * 0.3, 0.26, -0.24), wr = V(s * 0.14, 0.24, -0.6);
+    const sh = V(s * 0.25, 0.49, 0.0), el = V(s * 0.3, 0.27, -0.25), wr = V(s * 0.14, 0.305, -0.6);
     limb(torso, sh, el, 0.062, hood);
     limb(torso, el, wr, 0.052, hood);
     mesh(sgeo(0.05, 12, 10), hood, torso, sh.x, sh.y, sh.z);
-    hands.push(mesh(rbox(0.085, 0.035, 0.11, 0.015), skin, torso, wr.x - s * 0.01, wr.y - 0.01, wr.z - 0.07));
+    // a palm hovering over the home row, with four fingers and a thumb that reach the keys
+    const hand = new THREE.Group(); hand.position.set(wr.x - s * 0.01, KEYTOP + 0.028, wr.z - 0.055); torso.add(hand);
+    mesh(rbox(0.08, 0.026, 0.075, 0.012), skin, hand, 0, 0, 0, -0.12);
+    const fingers = [];
+    for (let f = 0; f < 4; f++) {
+      const fp = new THREE.Group(); fp.position.set((f - 1.5) * 0.019, -0.004, -0.038); hand.add(fp);
+      limb(fp, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.018, -0.036 + Math.abs(f - 1.5) * 0.004), 0.0085, skin);
+      fp.rotation.x = 0.05;
+      fingers.push(fp);
+    }
+    const th = new THREE.Group(); th.position.set(-s * 0.04, -0.006, -0.02); hand.add(th);
+    limb(th, new THREE.Vector3(0, 0, 0), new THREE.Vector3(-s * 0.012, -0.012, -0.03), 0.009, skin);
+    hand.userData.fingers = fingers;
+    hands.push(hand);
   }
-  person.userData = { torso, head, hands, baseY: hands.map((h) => h.position.y) };
+  person.userData = { torso, chest, head, hands, baseY: hands.map((h) => h.position.y) };
 }
 target(desk, "about", "About", new THREE.Vector3(1.4, 2.75, -2.9));
 
@@ -761,17 +776,146 @@ mailbox.position.set(3.9, 0, 2.2);
 }
 target(mailbox, "contact", "Contact", new THREE.Vector3(4.15, 2.05, 2.3));
 
-// ---------- a cat asleep on the rug ----------
+// ---------- the cat: an orange tabby that wanders, sits and naps ----------
+// Rig faces +x. Poses (walk, sit, loaf) are blended, and a walk cycle is layered on top.
 const cat = new THREE.Group();
+const CAT = {};
 {
-  cat.position.set(0.55, 0.03, -1.05); cat.rotation.y = 0.6; scene.add(cat);
-  const fur = mat(0xc98a4b, { roughness: 1 }), furD = mat(0x9c6532, { roughness: 1 });
-  const body = mesh(sgeo(0.2, 20, 14), fur, cat, 0, 0.12, 0); body.scale.set(1.35, 0.62, 1);
-  const head = mesh(sgeo(0.11, 18, 12), fur, cat, 0.2, 0.12, 0.12); head.scale.set(1, 0.85, 1);
-  for (const s of [-1, 1]) mesh(new THREE.ConeGeometry(0.04, 0.07, 4), furD, cat, 0.22 + s * 0.05, 0.22, 0.12, 0, 0, s * 0.3);
-  mesh(new THREE.TorusGeometry(0.2, 0.035, 8, 20, Math.PI * 1.1), fur, cat, 0, 0.05, 0, Math.PI / 2, 0, 0.3);
-  for (let i = 0; i < 3; i++) mesh(bgeo(0.03, 0.01, 0.16), furD, cat, -0.1 + i * 0.09, 0.245, 0, 0, 0, 0.2, false);
-  cat.userData.body = body;
+  scene.add(cat);
+  cat.position.set(0.7, 0, -1.15);
+  const furP = mat(0xd08b45, { roughness: 1 }), furD = mat(0xa9642c, { roughness: 1 }), cream = mat(0xf0dcc0, { roughness: 1 });
+  const body = new THREE.Group(); cat.add(body);
+  const trunk = mesh(new THREE.CapsuleGeometry(0.1, 0.26, 6, 16), furP, body, 0, 0, 0, 0, 0, Math.PI / 2);
+  mesh(new THREE.CapsuleGeometry(0.07, 0.22, 4, 12), cream, body, 0.01, -0.05, 0, 0, 0, Math.PI / 2).scale.set(1, 1, 0.9); // belly
+  // tabby bands across the back
+  for (const x of [-0.15, -0.09, -0.03, 0.03, 0.09]) {
+    const gb = new THREE.TorusGeometry(0.094, 0.0075, 5, 20, Math.PI * 0.8);
+    gb.rotateZ(Math.PI * 0.1); gb.rotateY(Math.PI / 2);
+    mesh(gb, furD, body, x, 0.004, 0, 0, 0, 0, false).scale.set(1, 0.95, 0.9);
+  }
+  trunk.scale.set(0.95, 1, 0.9);
+  mesh(sgeo(0.105, 16, 12), cream, body, 0.13, -0.015, 0).scale.set(1, 0.95, 0.85); // chest
+  mesh(sgeo(0.1, 16, 12), furP, body, -0.13, 0.0, 0).scale.set(1, 0.92, 0.9); // hips
+  limb(body, new THREE.Vector3(0.17, 0.04, 0), new THREE.Vector3(0.24, 0.12, 0), 0.052, furP); // neck
+  // head
+  const head = new THREE.Group(); head.position.set(0.27, 0.15, 0); body.add(head);
+  mesh(sgeo(0.085, 20, 16), furP, head, 0, 0, 0).scale.set(1, 0.9, 1.02);
+  mesh(sgeo(0.05, 14, 10), cream, head, 0.055, -0.028, 0).scale.set(0.9, 0.75, 1.2); // muzzle
+  mesh(sgeo(0.012, 8, 6), mat(0xd98a8a), head, 0.098, -0.005, 0); // nose
+  for (const s of [-1, 1]) mesh(bgeo(0.03, 0.012, 0.006), furD, head, 0.03, 0.045, s * 0.035, 0, 0, 0.3, false); // brow stripes
+  const eyes = [];
+  for (const s of [-1, 1]) {
+    const e = mesh(sgeo(0.016, 12, 10), glow(0xcfe07a), head, 0.066, 0.022, s * 0.036, 0, 0, 0, false);
+    e.scale.set(0.6, 1, 1);
+    mesh(bgeo(0.004, 0.022, 0.006), glow(0x111111), e, 0.012, 0, 0, 0, 0, 0, false); // slit pupil
+    eyes.push(e);
+    const ear = mesh(new THREE.ConeGeometry(0.036, 0.075, 4), furP, head, -0.005, 0.085, s * 0.045, s * 0.25, Math.PI / 4, -0.1);
+    mesh(new THREE.ConeGeometry(0.022, 0.05, 4), mat(0xd9a19a), ear, 0.008, -0.004, 0, 0, 0, 0, false);
+  }
+  const wpts = [];
+  for (const s of [-1, 1]) for (let k = 0; k < 3; k++) {
+    wpts.push(new THREE.Vector3(0.08, -0.03, s * 0.03), new THREE.Vector3(0.1, -0.035 + (k - 1) * 0.018, s * 0.12));
+  }
+  head.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(wpts), new THREE.LineBasicMaterial({ color: 0xf4efe6, transparent: true, opacity: 0.8 })));
+  // legs: pivot at the shoulder/hip, a knee joint, a paw
+  const legs = [];
+  for (const [x, front] of [[0.13, true], [-0.14, false]]) for (const s of [-1, 1]) {
+    const pivot = new THREE.Group(); pivot.position.set(x, -0.04, s * 0.055); body.add(pivot);
+    limb(pivot, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.11, 0), front ? 0.028 : 0.034, furP);
+    const knee = new THREE.Group(); knee.position.set(0, -0.11, 0); pivot.add(knee);
+    limb(knee, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.1, 0), 0.024, furP);
+    mesh(sgeo(0.03, 12, 8), cream, knee, 0.012, -0.108, 0).scale.set(1.3, 0.6, 1);
+    legs.push({ pivot, knee, front, side: s, off: (front ? 0 : Math.PI) + (s > 0 ? Math.PI / 2 : 0) });
+  }
+  // tail: a chain of joints
+  const tail = [];
+  let parent = body, pos = new THREE.Vector3(-0.24, 0.03, 0);
+  for (let i = 0; i < 10; i++) {
+    const j = new THREE.Group(); j.position.copy(pos); parent.add(j);
+    limb(j, new THREE.Vector3(0, 0, 0), new THREE.Vector3(-0.045, 0, 0), 0.02 - i * 0.0009, i === 9 ? furD : i % 3 === 1 ? furD : furP);
+    tail.push(j); parent = j; pos = new THREE.Vector3(-0.045, 0, 0);
+  }
+  Object.assign(CAT, { body, head, eyes, legs, tail, state: "loaf", timer: 7, target: null, yaw: 2.4, phase: 0, walk: 0, blink: 2,
+    pose: { y: 0.11, pitch: 0, front: 1, rear: 1, sit: 0, headY: -0.06, headPitch: -0.3, eyes: 0.08, tailBase: 0.25, tailCurl: 0, tailWrap: 1 } });
+  cat.rotation.y = CAT.yaw;
+}
+// open floor the cat may use: clear of the desk, chair, rack, shelves, belt and mailbox
+const CAT_AREA = { x0: -3.7, x1: 4.1, z0: -1.5, z1: 0.65 };
+const NAP = new THREE.Vector3(0.7, 0, -1.15);
+const POSES = {
+  walk: { y: 0.245, pitch: 0, front: 0, rear: 0, sit: 0, headY: 0, headPitch: 0, eyes: 1, tailBase: -1.15, tailCurl: 0.09, tailWrap: 0 },
+  sit: { y: 0.2, pitch: 0.55, front: 0, rear: 0, sit: 1, headY: 0, headPitch: -0.45, eyes: 1, tailBase: 0.35, tailCurl: 0.02, tailWrap: 0.7 },
+  loaf: { y: 0.11, pitch: 0, front: 1, rear: 1, sit: 0, headY: -0.06, headPitch: -0.3, eyes: 0.08, tailBase: 0.25, tailCurl: 0, tailWrap: 1 },
+};
+function stepCat(dt, t) {
+  const c = CAT;
+  c.timer -= dt;
+  if (c.state === "walk") {
+    const d = c.target.clone().sub(cat.position); d.y = 0;
+    const dist = d.length();
+    const want = Math.atan2(-d.z, d.x);
+    let diff = ((want - c.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    c.yaw += THREE.MathUtils.clamp(diff, -2.4 * dt, 2.4 * dt);
+    const facing = Math.abs(diff) < 0.7;
+    const speed = facing ? Math.min(0.34, dist * 1.5) : 0.05;
+    cat.position.x += Math.cos(c.yaw) * speed * dt;
+    cat.position.z -= Math.sin(c.yaw) * speed * dt;
+    c.phase += speed * dt * 26;
+    c.walk += (Math.min(1, speed * 4) - c.walk) * Math.min(1, dt * 6);
+    if (dist < 0.06) {
+      const r = rnd();
+      if (c.napNext) { c.state = "loaf"; c.timer = 12 + rnd() * 10; c.napNext = false; }
+      else if (r < 0.45) { c.state = "sit"; c.timer = 3 + rnd() * 5; }
+      else pickTarget();
+    }
+  } else {
+    c.walk += (0 - c.walk) * Math.min(1, dt * 6);
+    if (c.timer <= 0) pickTarget();
+  }
+  cat.rotation.y = c.yaw;
+  // blend towards the pose for the current state
+  const goal = POSES[c.state], k = 1 - Math.exp(-dt * 4);
+  for (const key in goal) c.pose[key] += (goal[key] - c.pose[key]) * k;
+  const p = c.pose, w = c.walk;
+  const bob = Math.abs(Math.sin(c.phase)) * 0.01 * w;
+  c.body.position.y = p.y + bob;
+  c.body.rotation.z = p.pitch;
+  // breathing, and a slow look around while sitting
+  const breath = Math.sin(t * (c.state === "loaf" ? 1.6 : 2.4)) * 0.012;
+  c.body.children[0].scale.y = 1 + breath;
+  c.head.rotation.z = p.headPitch - p.pitch + (c.state === "sit" ? Math.sin(t * 0.7) * 0.08 : 0);
+  c.head.rotation.y = c.state === "sit" ? Math.sin(t * 0.35) * 0.6 : 0;
+  c.head.position.y = 0.15 + p.headY;
+  // blink every few seconds; closed while napping
+  c.blink -= dt;
+  let open = p.eyes;
+  if (c.blink < 0) { open *= 0.1; if (c.blink < -0.12) c.blink = 2 + rnd() * 4; }
+  c.eyes.forEach((e) => { e.scale.y = Math.max(0.08, open); });
+  for (const L of c.legs) {
+    const swing = Math.sin(c.phase + L.off) * 0.5 * w;
+    const lift = Math.max(0, Math.sin(c.phase + L.off + 1.2)) * 0.7 * w;
+    if (L.front) {
+      L.pivot.rotation.z = -p.pitch + swing + p.front * -1.25;
+      L.knee.rotation.z = lift + p.front * 2.3;
+    } else {
+      L.pivot.rotation.z = swing + p.rear * 1.25 + p.sit * 1.35 - p.pitch * (1 - p.sit);
+      L.knee.rotation.z = -lift + p.rear * -2.3 + p.sit * -2.5;
+    }
+  }
+  c.tail.forEach((j, i) => {
+    // rotation.z < 0 lifts the tail; the base joint sets the carriage, the rest curl
+    j.rotation.z = (i === 0 ? p.tailBase - p.pitch : p.tailCurl) + Math.sin(t * 2 + i * 0.6) * 0.04 * w;
+    j.rotation.y = p.tailWrap * 0.3 + Math.sin(t * (c.state === "sit" ? 1.1 : 1.6) - i * 0.45) * (0.08 + 0.1 * (1 - p.tailWrap));
+  });
+}
+function pickTarget() {
+  const c = CAT;
+  if (rnd() < 0.25) { c.target = NAP.clone(); c.napNext = true; }
+  else {
+    const A = CAT_AREA;
+    c.target = new THREE.Vector3(A.x0 + rnd() * (A.x1 - A.x0), 0, A.z0 + rnd() * (A.z1 - A.z0));
+  }
+  c.state = "walk";
 }
 
 // ---------- dust in the lamplight ----------
@@ -789,15 +933,21 @@ let dust;
 const bulbCol = new THREE.Color();
 function stepLife(dt, t) {
   const u = person.userData;
-  u.torso.scale.y = 1 + Math.sin(t * 1.6) * 0.012;
-  u.torso.rotation.x = Math.sin(t * 0.4) * 0.015;
+  u.chest.scale.set(1 + Math.sin(t * 1.6) * 0.012, 1 + Math.sin(t * 1.6) * 0.01, 1 + Math.sin(t * 1.6) * 0.02);
   // typing while the terminal types; now and then a glance at the window
   const typing = isTyping() && term.typed > 0;
-  u.hands.forEach((h, i) => { h.position.y = u.baseY[i] + (typing ? Math.max(0, Math.sin(t * 22 + i * 1.7)) * 0.012 : 0); });
+  u.hands.forEach((h, i) => {
+    // the hand itself only ever lifts; fingers take turns pressing down
+    h.position.y = u.baseY[i] + (typing ? Math.max(0, Math.sin(t * 7 + i * 2.1)) * 0.004 : 0);
+    h.userData.fingers.forEach((f, k) => {
+      const tap = typing ? Math.max(0, Math.sin(t * 19 + k * 1.9 + i * 3.1)) : 0;
+      f.rotation.x = 0.05 - tap * 0.28 + tap * tap * 0.1;
+    });
+  });
   const glance = Math.max(0, Math.sin(t * 0.13) - 0.85) * 4;
   u.head.rotation.y = glance * 0.5;
   u.head.rotation.x = -0.05 + Math.sin(t * 0.9) * 0.02;
-  cat.userData.body.scale.y = 0.62 + Math.sin(t * 1.9) * 0.02;
+  stepCat(dt, t);
   steam.forEach((p) => {
     p.t = (p.t + dt * 0.22) % 1;
     p.s.position.set(Math.sin(p.t * 6) * 0.02, 0.16 + p.t * 0.3, 0);
