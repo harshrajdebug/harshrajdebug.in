@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const canvas = document.getElementById("room");
 const labelsEl = document.getElementById("labels");
@@ -34,8 +35,11 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.6;
+renderer.localClippingEnabled = true; // the 3D printer reveals its part layer by layer
 
 const scene = new THREE.Scene();
+// a soft studio reflection, used only by metal and glass so they read as real materials
+const envTex = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 scene.background = new THREE.Color(COL.bg);
 scene.fog = new THREE.Fog(COL.bg, 20, 40);
 const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
@@ -469,12 +473,16 @@ const steam = [];
   }
   mesh(bgeo(2.44, 0.05, 0.04), leg, desk, 0, 0.85, -0.45);
 
-  // laptop: aluminium body, black keys, trackpad, thin-bezel screen with a notch
+  // laptop: anodised aluminium and black glass that pick up reflections, like the real thing
   const lt = new THREE.Group(); lt.position.set(-0.15, 1.055, 0.3); desk.add(lt);
-  const alu = mat(0xc4c8cf, { metalness: 0.75, roughness: 0.32 }), aluDark = mat(0xa9aeb6, { metalness: 0.7, roughness: 0.3 });
+  const alu = new THREE.MeshPhysicalMaterial({ color: 0xc9ccd1, metalness: 1, roughness: 0.34, envMap: envTex, envMapIntensity: 0.55, clearcoat: 0.15 });
+  const aluSoft = new THREE.MeshPhysicalMaterial({ color: 0xbfc3c9, metalness: 0.85, roughness: 0.22, envMap: envTex, envMapIntensity: 0.5, clearcoat: 0.6, clearcoatRoughness: 0.2 });
+  const blackGlass = new THREE.MeshPhysicalMaterial({ color: 0x050607, metalness: 0, roughness: 0.04, clearcoat: 1, envMap: envTex, envMapIntensity: 0.55 });
   const LW = 0.62, LD = 0.43, LH = 0.022;
-  mesh(rbox(LW, LH, LD, 0.012), alu, lt, 0, LH / 2, 0);
-  mesh(bgeo(LW - 0.05, 0.001, 0.215), mat(0x1a1c21, { roughness: 0.6 }), lt, 0, LH + 0.0005, -0.085, 0, 0, 0, false); // keyboard well
+  mesh(rbox(LW, LH, LD, 0.016, 4), alu, lt, 0, LH / 2, 0);
+  // keyboard well, with a faint backlight bleeding between the keys
+  mesh(rbox(0.566, 0.001, 0.222, 0.006, 1), mat(0x0a0b0d, { roughness: 0.8 }), lt, 0, LH + 0.0002, -0.085, 0, 0, 0, false);
+  mesh(new THREE.PlaneGeometry(0.556, 0.212), glow(0x3a3f4a, { transparent: true, opacity: 0.35 }), lt, 0, LH + 0.0008, -0.085, -Math.PI / 2, 0, 0, false);
   // Mac layout: half-height function row with Touch ID, wide modifiers, inverted-T arrows
   const keys = [];
   const GAP = 0.006;
@@ -489,37 +497,44 @@ const steam = [];
   row(-0.081, 0.032, [[0.06, ""], ...k(11, 0.0316), [0.06, ""]]);
   row(-0.043, 0.032, [[0.078, ""], ...k(10, 0.0318), [0.078, ""]]);
   row(-0.005, 0.032, [[0.032, ""], [0.032, ""], [0.032, ""], [0.042, ""], [0.178, "space"], [0.042, ""], [0.032, ""], [0.032, ""]]);
-  // arrows as an inverted T: left and right are half height on the bottom line, up and down share a key
   const left = keys[keys.length - 1]; left[1] = 0.003; left[3] = 0.015;
   const ax = left[0] + 0.032 + GAP;
   keys.push([ax, -0.013, 0.032, 0.015, ""], [ax, 0.003, 0.032, 0.015, ""], [ax + 0.032 + GAP, 0.003, 0.032, 0.015, ""]);
-  const caps = new THREE.InstancedMesh(rbox(1, 0.004, 1, 0.003, 1), mat(0x0f1014, { roughness: 0.45 }), keys.length);
+  // a key legend atlas: each keycap gets a faint glyph, as on a backlit keyboard
+  const legends = canvasTex(64, 64, (g) => { g.fillStyle = "#101114"; g.fillRect(0, 0, 64, 64); g.fillStyle = "rgba(220,226,238,.55)"; g.fillRect(24, 22, 16, 3); g.fillRect(30, 22, 3, 18); });
+  const caps = new THREE.InstancedMesh(rbox(1, 0.0035, 1, 0.003, 2), new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: legends, roughness: 0.5, clearcoat: 0.2, envMap: envTex, envMapIntensity: 0.15 }), keys.length);
   const d = new THREE.Object3D();
   keys.forEach(([x, z, w, dep, tag], i) => {
     d.position.set(x, LH + 0.003, z); d.scale.set(w, 1, dep); d.updateMatrix();
     caps.setMatrixAt(i, d.matrix);
-    caps.setColorAt(i, new THREE.Color(tag === "touch" ? 0x2a2c31 : 0x111216));
+    caps.setColorAt(i, new THREE.Color(tag === "touch" ? 0x6d7079 : 0xffffff));
   });
   caps.receiveShadow = true;
   lt.add(caps);
-  for (const sx of [-1, 1]) mesh(bgeo(0.012, 0.001, 0.2), mat(0x2b2e35), lt, sx * 0.3, LH + 0.0005, -0.085, 0, 0, 0, false); // speaker grilles
-  mesh(rbox(0.25, 0.002, 0.15, 0.01), aluDark, lt, 0, LH + 0.001, 0.125, 0, 0, 0, false); // trackpad
-  mesh(bgeo(0.08, 0.004, 0.006), aluDark, lt, 0, 0.012, LD / 2 + 0.001, 0, 0, 0, false); // thumb notch
-  // the lid, hinged at the back edge and tilted open
-  const lid = new THREE.Group(); lid.position.set(0, LH, -LD / 2 + 0.008); lid.rotation.x = -0.26; lt.add(lid);
-  const LHt = 0.4;
-  mesh(rbox(LW, LHt, 0.012, 0.012), alu, lid, 0, LHt / 2, -0.004);
-  mesh(bgeo(LW - 0.006, LHt - 0.006, 0.002), mat(0x08090b, { roughness: 0.3 }), lid, 0, LHt / 2, 0.003, 0, 0, 0, false); // black glass
-  mesh(rbox(0.07, 0.016, 0.003, 0.006), mat(0x08090b), lid, 0, LHt - 0.013, 0.005, 0, 0, 0, false); // notch
-  mesh(sgeo(0.003, 8, 6), mat(0x1f2a3a, { roughness: 0.1, metalness: 0.6 }), lid, 0, LHt - 0.013, 0.0068, 0, 0, 0, false); // camera
-  mesh(rbox(LW - 0.02, 0.006, 0.004, 0.002), mat(0x2b2e35), lid, 0, 0.006, 0.004, 0, 0, 0, false); // lower bezel lip
-  mesh(cgeo(0.011, 0.011, LW - 0.12, 12), mat(0x2b2e35, { metalness: 0.5 }), lt, 0, LH + 0.004, -LD / 2 + 0.006, 0, 0, Math.PI / 2); // hinge
+  // perforated speaker grilles either side of the keyboard
+  const holes = canvasTex(32, 256, (g, w, h) => { g.fillStyle = "#c9ccd1"; g.fillRect(0, 0, w, h); g.fillStyle = "#26282d"; for (let y = 3; y < h; y += 6) for (let x = 4 + ((y / 6) % 2) * 3; x < w - 2; x += 6) { g.beginPath(); g.arc(x, y, 1.3, 0, Math.PI * 2); g.fill(); } });
+  for (const sx of [-1, 1]) mesh(new THREE.PlaneGeometry(0.02, 0.21), new THREE.MeshPhysicalMaterial({ map: holes, metalness: 0.8, roughness: 0.4, envMap: envTex, envMapIntensity: 0.4 }), lt, sx * 0.296, LH + 0.0004, -0.085, -Math.PI / 2, 0, 0, false);
+  // glass trackpad with a thin polished edge
+  mesh(rbox(0.262, 0.0014, 0.162, 0.01, 2), aluSoft, lt, 0, LH + 0.0005, 0.122, 0, 0, 0, false);
+  mesh(rbox(0.066, 0.004, 0.006, 0.002, 1), mat(0x8f939a, { metalness: 0.8 }), lt, 0, 0.011, LD / 2 - 0.001, 0, 0, 0, false); // lid notch
+  // the lid: thin aluminium shell, black glass front, 16:10 panel, camera notch
+  const lid = new THREE.Group(); lid.position.set(0, LH - 0.002, -LD / 2 + 0.006); lid.rotation.x = -0.33; lt.add(lid);
+  const LHt = 0.41;
+  mesh(rbox(LW, LHt, 0.007, 0.014, 4), alu, lid, 0, LHt / 2, -0.004);
+  mesh(rbox(LW - 0.003, LHt - 0.003, 0.002, 0.013, 2), blackGlass, lid, 0, LHt / 2, 0.0005, 0, 0, 0, false);
+  mesh(cgeo(0.0075, 0.0075, LW - 0.09, 16), mat(0x17181b, { roughness: 0.4 }), lt, 0, LH + 0.001, -LD / 2 + 0.004, 0, 0, Math.PI / 2); // hinge
   const c = document.createElement("canvas"); c.width = 700; c.height = 456;
   screenCtx = c.getContext("2d");
-  screenTex = new THREE.CanvasTexture(c); screenTex.colorSpace = THREE.SRGBColorSpace;
-  mesh(new THREE.PlaneGeometry(LW - 0.03, LHt - 0.03), glow(0xffffff, { map: screenTex }), lid, 0, LHt / 2 - 0.004, 0.0045, 0, 0, 0, false);
-  const screenGlow = new THREE.PointLight(0x9db4ff, 1.4, 1.6, 2);
-  screenGlow.position.set(0, 0.2, 0.25); lid.add(screenGlow);
+  screenTex = new THREE.CanvasTexture(c); screenTex.colorSpace = THREE.SRGBColorSpace; screenTex.anisotropy = 8;
+  const SW = LW - 0.024, SH = LHt - 0.034;
+  mesh(new THREE.PlaneGeometry(SW, SH), glow(0xffffff, { map: screenTex }), lid, 0, LHt / 2 - 0.006, 0.0018, 0, 0, 0, false);
+  mesh(rbox(0.07, 0.017, 0.001, 0.005, 1), glow(0x050607), lid, 0, LHt - 0.02, 0.0023, 0, 0, 0, false); // notch
+  mesh(sgeo(0.0028, 8, 6), mat(0x1f2a3a, { roughness: 0.05, metalness: 0.6 }), lid, 0, LHt - 0.017, 0.0032, 0, 0, 0, false); // camera
+  // a faint diagonal glare across the glass
+  const glare = canvasTex(256, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0.2, "rgba(255,255,255,0)"); gr.addColorStop(0.42, "rgba(255,255,255,.10)"); gr.addColorStop(0.5, "rgba(255,255,255,0)"); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  mesh(new THREE.PlaneGeometry(SW, SH), new THREE.MeshBasicMaterial({ map: glare, transparent: true, depthWrite: false, toneMapped: false }), lid, 0, LHt / 2 - 0.006, 0.0026, 0, 0, 0, false);
+  const screenGlow = new THREE.PointLight(0xa9bbff, 1.6, 1.7, 2);
+  screenGlow.position.set(0, 0.22, 0.28); lid.add(screenGlow);
   // sticky note on the desk beside the laptop
   mesh(bgeo(0.1, 0.002, 0.1), mat(0xf2d46d), desk, 0.35, 1.057, 0.42, 0, 0.3, 0, false);
 
@@ -724,97 +739,182 @@ function drawScreen() {
   term.dirty = false;
 }
 
-// ---------- display cabinet: built ----------
-// A walnut sideboard with three lit glass domes. Each holds an object for one project:
-// a padlock (sigstore-guard), a hook against a shield (PhishArmor), an onion under a lens (Darkscan).
-const cabinet = new THREE.Group();
-cabinet.position.set(-1.7, 0, 1.55);
+// ---------- maker bench with a 3D printer: built ----------
+// The printer prints the three projects in turn, revealed layer by layer; finished prints
+// stand on a riser. Hovering a print names its project, clicking opens it.
+const bench = new THREE.Group();
+bench.position.set(-1.7, 0, 1.55);
 const exhibits = [];
+const PRINTS = [
+  { name: "sigstore-guard", color: 0xe0b04a },
+  { name: "PhishArmor", color: 0x4f86c6 },
+  { name: "Darkscan", color: 0x8a5bb0 },
+];
+const layerTex = canvasTex(64, 256, (g, w, h) => { g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.fillStyle = "rgba(0,0,0,.14)"; for (let y = 0; y < h; y += 4) g.fillRect(0, y, w, 1); }, [1, 6]);
+function filament(color, clip) {
+  return new THREE.MeshStandardMaterial({ color, map: layerTex, roughness: 0.55, metalness: 0.05, clippingPlanes: clip ? [clip] : null, clipShadows: true, side: clip ? THREE.DoubleSide : THREE.FrontSide });
+}
+// the three printed objects; each fits in about 0.12 x 0.16 x 0.08
+function printShape(i, m) {
+  const g = new THREE.Group();
+  if (i === 0) { // padlock
+    mesh(rbox(0.12, 0.1, 0.055, 0.018), m, g, 0, 0.05, 0);
+    mesh(new THREE.TorusGeometry(0.038, 0.011, 10, 28, Math.PI), m, g, 0, 0.1, 0);
+    for (const sx of [-1, 1]) mesh(cgeo(0.011, 0.011, 0.02, 10), m, g, sx * 0.038, 0.1, 0);
+  } else if (i === 1) { // shield with a hook
+    const sh = new THREE.Shape();
+    sh.moveTo(0, 0.16); sh.quadraticCurveTo(0.055, 0.15, 0.07, 0.14); sh.lineTo(0.065, 0.065); sh.quadraticCurveTo(0.055, 0.018, 0, 0); sh.quadraticCurveTo(-0.055, 0.018, -0.065, 0.065); sh.lineTo(-0.07, 0.14); sh.quadraticCurveTo(-0.055, 0.15, 0, 0.16);
+    mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.02, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.004, bevelSegments: 2 }), m, g, 0, 0, -0.012);
+    const hook = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0.13, 0.014), new THREE.Vector3(0, 0.05, 0.014), new THREE.Vector3(0.018, 0.028, 0.014), new THREE.Vector3(0.04, 0.042, 0.014), new THREE.Vector3(0.042, 0.068, 0.014)]);
+    mesh(new THREE.TubeGeometry(hook, 30, 0.006, 8), m, g);
+  } else { // onion
+    const prof = [];
+    for (let k = 0; k <= 20; k++) { const t = k / 20; prof.push(new THREE.Vector2(Math.max(0.002, Math.sin(Math.PI * Math.pow(t, 0.8)) * 0.06 * (1 - 0.35 * t)), t * 0.15)); }
+    mesh(new THREE.LatheGeometry(prof, 32), m, g, 0, 0, 0);
+    mesh(cgeo(0.005, 0.002, 0.025, 6), m, g, 0, 0.16, 0);
+  }
+  return g;
+}
+let printer;
 {
-  const walnut = mat(0x5b3f2c, { roughness: 0.55 }), walnutD = mat(0x4a3223, { roughness: 0.6 });
-  const brass = mat(0xc9a15a, { metalness: 0.85, roughness: 0.3 });
-  const W = 3.0, D = 0.62, H = 0.78;
-  mesh(rbox(W, 0.05, D + 0.04, 0.012), walnut, cabinet, 0, H, 0); // top
-  mesh(rbox(W - 0.04, H - 0.2, D, 0.01), walnutD, cabinet, 0, 0.19 + (H - 0.2) / 2, 0); // carcass
-  for (let i = 0; i < 3; i++) {
-    const x = -W / 2 + W / 6 + (i * W) / 3;
-    mesh(rbox(W / 3 - 0.03, H - 0.26, 0.02, 0.006), walnut, cabinet, x, 0.2 + (H - 0.24) / 2, D / 2 + 0.005); // door
-    mesh(rbox(0.12, 0.018, 0.02, 0.008), brass, cabinet, x, H - 0.13, D / 2 + 0.027); // handle
+  // the bench: birch ply top, steel frame, a shelf of filament spools underneath
+  const ply = mat(0xa8865c, { roughness: 0.55 }), steelF = mat(0x2a2e36, { metalness: 0.6, roughness: 0.4 });
+  const BW = 2.7, BD = 0.82, BH = 0.86;
+  mesh(rbox(BW, 0.05, BD, 0.01), ply, bench, 0, BH, 0);
+  mesh(bgeo(BW - 0.02, 0.012, 0.02), mat(0x7a6040), bench, 0, BH - 0.02, BD / 2 - 0.005); // edge band
+  for (const x of [-BW / 2 + 0.05, BW / 2 - 0.05]) for (const z of [-BD / 2 + 0.05, BD / 2 - 0.05]) mesh(bgeo(0.045, BH - 0.02, 0.045), steelF, bench, x, (BH - 0.02) / 2, z);
+  mesh(rbox(BW - 0.12, 0.03, BD - 0.1, 0.006), ply, bench, 0, 0.22, 0);
+  [0xe0b04a, 0x4f86c6, 0x8a5bb0, 0xd9d0bd].forEach((col, i) => {
+    const sp = new THREE.Group(); sp.position.set(-0.9 + i * 0.3, 0.35, 0); sp.rotation.z = Math.PI / 2; bench.add(sp);
+    mesh(cgeo(0.1, 0.1, 0.07, 28), mat(col, { roughness: 0.5 }), sp, 0, 0, 0);
+    for (const s of [-1, 1]) mesh(cgeo(0.115, 0.115, 0.008, 28), mat(0x1c1f26, { roughness: 0.4 }), sp, 0, s * 0.04, 0);
+    mesh(cgeo(0.03, 0.03, 0.09, 16), mat(0xd9d0bd), sp, 0, 0, 0);
+  });
+  mesh(rbox(0.5, 0.18, 0.3, 0.02), mat(0xb0392b, { roughness: 0.5, metalness: 0.3 }), bench, 0.85, 0.325, 0.05); // toolbox
+  mesh(bgeo(0.3, 0.02, 0.03), mat(0x1c1f26), bench, 0.85, 0.425, 0.05);
+  // a cutting mat, a caliper and a scalpel
+  mesh(bgeo(0.55, 0.004, 0.38), mat(0x2f5d4a, { roughness: 0.9 }), bench, 0.2, BH + 0.027, 0.12);
+  mesh(bgeo(0.22, 0.008, 0.035), mat(0xc9ccd4, { metalness: 0.8, roughness: 0.3, envMap: envTex, envMapIntensity: 0.4 }), bench, 0.18, BH + 0.033, 0.05, 0, 0.3, 0);
+  mesh(cgeo(0.006, 0.006, 0.14, 8), mat(0xe0b04a), bench, 0.3, BH + 0.035, 0.2, Math.PI / 2, 0, 1.2);
+
+  // the printer (a bed-slinger: bed moves front/back, head moves left/right, gantry rises)
+  const P0 = new THREE.Group(); P0.position.set(-0.75, BH + 0.025, 0); bench.add(P0);
+  const black = mat(0x1b1d22, { roughness: 0.5, metalness: 0.3 }), orange = mat(0xe8743b, { roughness: 0.45 });
+  const rod = new THREE.MeshStandardMaterial({ color: 0xd7dade, metalness: 1, roughness: 0.2, envMap: envTex, envMapIntensity: 0.6 });
+  for (const x of [-0.26, 0.26]) mesh(bgeo(0.04, 0.05, 0.62), black, P0, x, 0.025, 0);
+  for (const z of [-0.3, 0.3]) mesh(bgeo(0.56, 0.07, 0.03), orange, P0, 0, 0.035, z);
+  for (const x of [-0.08, 0.08]) mesh(cgeo(0.006, 0.006, 0.6, 8), rod, P0, x, 0.07, 0, Math.PI / 2);
+  const bedG = new THREE.Group(); bedG.position.y = 0.08; P0.add(bedG);
+  mesh(rbox(0.36, 0.012, 0.36, 0.004), black, bedG, 0, 0.006, 0);
+  const pei = canvasTex(128, 128, (g, w, h) => { g.fillStyle = "#b8903f"; g.fillRect(0, 0, w, h); for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(${rnd() > 0.5 ? "255,230,170" : "90,60,20"},.25)`; g.fillRect(rnd() * w, rnd() * h, 1.5, 1.5); } });
+  mesh(rbox(0.35, 0.004, 0.35, 0.004), new THREE.MeshStandardMaterial({ map: pei, roughness: 0.55, metalness: 0.3 }), bedG, 0, 0.014, 0);
+  const BED_TOP = 0.016;
+  // frame, z rods and lead screws
+  const fr = 0.62;
+  mesh(bgeo(0.62, 0.045, 0.035), black, P0, 0, fr, -0.03);
+  for (const x of [-0.29, 0.29]) mesh(bgeo(0.045, fr, 0.035), black, P0, x, fr / 2, -0.03);
+  for (const x of [-0.235, 0.235]) {
+    mesh(cgeo(0.005, 0.005, fr - 0.08, 8), rod, P0, x, fr / 2 + 0.02, 0.0);
+    mesh(cgeo(0.004, 0.004, fr - 0.08, 6), mat(0x9a7a3a, { metalness: 0.8 }), P0, x + 0.03, fr / 2 + 0.02, 0.0);
+    mesh(rbox(0.06, 0.06, 0.06, 0.006), black, P0, x + 0.02, 0.03, 0.0); // z motor
   }
-  // tapered mid-century legs
-  for (const x of [-W / 2 + 0.12, W / 2 - 0.12]) for (const z of [-D / 2 + 0.08, D / 2 - 0.08]) {
-    const leg = mesh(cgeo(0.028, 0.016, 0.19, 12), walnutD, cabinet, x, 0.095, z, (z > 0 ? 1 : -1) * 0.12, 0, (x > 0 ? -1 : 1) * 0.12);
-    mesh(cgeo(0.017, 0.017, 0.02, 10), brass, leg, 0, -0.1, 0);
-  }
-  const glass = new THREE.MeshPhysicalMaterial({ color: 0xdbe6ff, transparent: true, opacity: 0.16, roughness: 0.04, metalness: 0, clearcoat: 1, depthWrite: false, side: THREE.DoubleSide });
-  const plinthM = mat(0x16191f, { roughness: 0.5 });
-  const steel = mat(0xc9ccd4, { metalness: 0.9, roughness: 0.25 });
-  const makers = [
-    // sigstore-guard: a brass padlock
-    (g) => {
-      mesh(rbox(0.13, 0.11, 0.06, 0.02), brass, g, 0, 0.055, 0);
-      mesh(new THREE.TorusGeometry(0.042, 0.011, 10, 28, Math.PI), steel, g, 0, 0.11, 0);
-      for (const sx of [-1, 1]) mesh(cgeo(0.011, 0.011, 0.02, 10), steel, g, sx * 0.042, 0.105, 0);
-      mesh(cgeo(0.011, 0.011, 0.004, 14), mat(0x1a1410), g, 0, 0.062, 0.031, Math.PI / 2);
-      mesh(bgeo(0.007, 0.022, 0.004), mat(0x1a1410), g, 0, 0.047, 0.031);
-    },
-    // PhishArmor: a steel fish hook in front of a small shield
-    (g) => {
-      const sh = new THREE.Shape();
-      sh.moveTo(0, 0.17); sh.quadraticCurveTo(0.06, 0.16, 0.075, 0.15); sh.lineTo(0.07, 0.07); sh.quadraticCurveTo(0.06, 0.02, 0, 0); sh.quadraticCurveTo(-0.06, 0.02, -0.07, 0.07); sh.lineTo(-0.075, 0.15); sh.quadraticCurveTo(-0.06, 0.16, 0, 0.17);
-      mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.005, bevelSegments: 2 }), mat(0x2c3f66, { roughness: 0.4, metalness: 0.3 }), g, 0, 0.005, -0.03);
-      const edge = new THREE.Shape(); edge.moveTo(0, 0.155); edge.lineTo(0.006, 0.155); edge.lineTo(0.006, 0.015); edge.lineTo(-0.006, 0.015); edge.lineTo(-0.006, 0.155);
-      mesh(new THREE.ExtrudeGeometry(edge, { depth: 0.004, bevelEnabled: false }), brass, g, 0, 0.005, -0.012);
-      const hook = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0.0, 0.16, 0.01), new THREE.Vector3(0.0, 0.1, 0.01), new THREE.Vector3(0.0, 0.05, 0.01),
-        new THREE.Vector3(0.02, 0.025, 0.01), new THREE.Vector3(0.045, 0.04, 0.01), new THREE.Vector3(0.048, 0.07, 0.01),
-      ]);
-      mesh(new THREE.TubeGeometry(hook, 40, 0.005, 8), steel, g);
-      mesh(new THREE.TorusGeometry(0.01, 0.003, 8, 16), steel, g, 0, 0.17, 0.01);
-      mesh(new THREE.ConeGeometry(0.007, 0.018, 8), steel, g, 0.047, 0.078, 0.01, 0, 0, 0.1);
-    },
-    // Darkscan: a layered onion and a magnifying glass
-    (g) => {
-      const prof = [];
-      for (let i = 0; i <= 20; i++) { const t = i / 20; const r = Math.sin(Math.PI * Math.pow(t, 0.8)) * 0.06 * (1 - 0.35 * t); prof.push(new THREE.Vector2(Math.max(0.002, r), t * 0.15)); }
-      const layers = canvasTex(256, 64, (c, w, h) => { c.fillStyle = "#7d4b92"; c.fillRect(0, 0, w, h); for (let x = 0; x < w; x += 18) { c.fillStyle = "rgba(255,255,255,.18)"; c.fillRect(x, 0, 3, h); } });
-      mesh(new THREE.LatheGeometry(prof, 32), mat(0xffffff, { map: layers, roughness: 0.5 }), g, -0.015, 0.002, 0);
-      mesh(cgeo(0.004, 0.001, 0.03, 6), mat(0x6b8f4e), g, -0.015, 0.165, 0);
-      const lens = new THREE.Group(); lens.position.set(0.045, 0.06, 0.035); lens.rotation.set(0.2, -0.5, 0.6); g.add(lens);
-      mesh(new THREE.TorusGeometry(0.035, 0.006, 10, 30), mat(0x1c1f26, { metalness: 0.5 }), lens, 0, 0, 0);
-      mesh(new THREE.CircleGeometry(0.033, 30), glass, lens, 0, 0, 0, 0, 0, 0, false);
-      mesh(cgeo(0.007, 0.009, 0.07, 10), mat(0x5b3f2c), lens, 0, -0.07, 0);
-    },
-  ];
-  const names = ["sigstore-guard", "PhishArmor", "Darkscan"];
-  for (let i = 0; i < 3; i++) {
-    const x = -1.0 + i;
-    const bay = new THREE.Group(); bay.position.set(x, H + 0.025, 0); cabinet.add(bay);
-    mesh(rbox(0.36, 0.08, 0.36, 0.015), plinthM, bay, 0, 0.04, 0);
-    const plaque = canvasTex(256, 48, (c, w, h) => {
-      c.fillStyle = "#c9a15a"; c.fillRect(0, 0, w, h);
-      c.fillStyle = "#3a2a14"; c.font = "600 22px 'IBM Plex Mono', monospace"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(names[i], w / 2, h / 2 + 1);
-    });
-    mesh(new THREE.PlaneGeometry(0.22, 0.041), mat(0xffffff, { map: plaque, metalness: 0.6, roughness: 0.35 }), bay, 0, 0.04, 0.1805, 0, 0, 0, false);
-    const turn = new THREE.Group(); turn.position.y = 0.08; bay.add(turn);
-    mesh(cgeo(0.08, 0.09, 0.012, 24), mat(0x2a2f38, { metalness: 0.4 }), turn, 0, 0.006, 0);
-    const piece = new THREE.Group(); piece.position.y = 0.012; turn.add(piece);
-    makers[i](piece);
+  // x gantry and the print head
+  const xg = new THREE.Group(); P0.add(xg);
+  for (const s of [-1, 1]) mesh(rbox(0.055, 0.07, 0.05, 0.006), orange, xg, s * 0.235, 0, 0.0);
+  for (const dy of [-0.02, 0.02]) mesh(cgeo(0.005, 0.005, 0.46, 8), rod, xg, 0, dy, 0.02, 0, 0, Math.PI / 2);
+  const car = new THREE.Group(); xg.add(car);
+  mesh(rbox(0.07, 0.08, 0.06, 0.008), orange, car, 0, 0.005, 0.05);
+  mesh(cgeo(0.024, 0.024, 0.004, 20), black, car, 0, 0.005, 0.082, Math.PI / 2);
+  for (let i = 0; i < 5; i++) mesh(bgeo(0.004, 0.036, 0.002), mat(0x3a3d44), car, -0.012 + i * 0.006, 0.005, 0.085, 0, 0, 0, false);
+  mesh(bgeo(0.03, 0.02, 0.025), mat(0xb9bcc2, { metalness: 0.8 }), car, 0, -0.045, 0.05); // heater block
+  mesh(new THREE.ConeGeometry(0.008, 0.016, 10), mat(0xc9a15a, { metalness: 0.9, roughness: 0.3 }), car, 0, -0.063, 0.05, Math.PI);
+  mesh(sgeo(0.004, 8, 6), glow(0xff8a3a), car, 0, -0.071, 0.05, 0, 0, 0, false);
+  // spool on top and the filament tube down to the head
+  const spool = new THREE.Group(); spool.position.set(0.12, fr + 0.1, -0.03); P0.add(spool);
+  mesh(bgeo(0.02, 0.09, 0.02), black, P0, 0.12, fr + 0.04, -0.03);
+  const spoolFil = mat(PRINTS[0].color, { roughness: 0.5 });
+  mesh(cgeo(0.075, 0.075, 0.055, 28), spoolFil, spool, 0, 0, 0, 0, 0, Math.PI / 2);
+  for (const s of [-1, 1]) mesh(cgeo(0.088, 0.088, 0.006, 28), black, spool, s * 0.031, 0, 0, 0, 0, Math.PI / 2);
+  const tubeM = new THREE.MeshStandardMaterial({ color: 0xeef2f7, transparent: true, opacity: 0.55, roughness: 0.2 });
+  const tube = new THREE.Mesh(new THREE.BufferGeometry(), tubeM); P0.add(tube);
+  // a small display on the front
+  const lcdC = document.createElement("canvas"); lcdC.width = 256; lcdC.height = 96;
+  const lcdTex = new THREE.CanvasTexture(lcdC); lcdTex.colorSpace = THREE.SRGBColorSpace;
+  const lcd = new THREE.Group(); lcd.position.set(-0.17, 0.05, 0.325); lcd.rotation.x = -0.35; P0.add(lcd);
+  mesh(rbox(0.16, 0.07, 0.02, 0.006), black, lcd, 0, 0, 0);
+  mesh(new THREE.PlaneGeometry(0.13, 0.05), glow(0xffffff, { map: lcdTex }), lcd, 0, 0, 0.0105, 0, 0, 0, false);
+  mesh(cgeo(0.012, 0.012, 0.012, 16), mat(0x3a3d44, { metalness: 0.6 }), lcd, 0.065, 0, 0.012, Math.PI / 2);
+
+  // the part being printed, clipped at the current layer height
+  const clip = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+  const parts = PRINTS.map((p, i) => { const g = printShape(i, filament(p.color, clip)); g.position.y = BED_TOP; g.visible = false; bedG.add(g); return g; });
+  printer = { P0, bedG, xg, car, spool, spoolFil, tube, lcdC, lcdTex, clip, parts, BED_TOP, job: 0, progress: 0, rest: 0, lcdNext: 0 };
+
+  // finished prints on a stepped riser
+  const riser = new THREE.Group(); riser.position.set(0.85, BH + 0.025, -0.05); bench.add(riser);
+  const wood = mat(0x7a5a3c, { roughness: 0.6 });
+  for (let i = 0; i < 3; i++) mesh(rbox(0.55 - i * 0.0, 0.07 * (3 - i), 0.16, 0.01), wood, riser, 0, 0.035 * (3 - i), -0.12 + i * 0.16);
+  PRINTS.forEach((p, i) => {
+    const piece = printShape(i, filament(p.color));
+    piece.position.set(-0.17 + i * 0.17, 0.07 * (3 - i) + 0.001, -0.12 + i * 0.16);
     piece.traverse((o) => { if (o.isMesh) o.userData.slot = i; });
-    // glass dome
-    mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.22, 36, 1, true), glass, bay, 0, 0.19, 0, 0, 0, 0, false);
-    mesh(new THREE.SphereGeometry(0.15, 36, 12, 0, Math.PI * 2, 0, Math.PI / 2), glass, bay, 0, 0.3, 0, 0, 0, 0, false);
-    mesh(new THREE.TorusGeometry(0.152, 0.006, 8, 40), brass, bay, 0, 0.082, 0, Math.PI / 2);
-    const lamp = new THREE.PointLight(0xffd9a0, 0.9, 0.6, 2); lamp.position.set(0, 0.36, 0.05); bay.add(lamp);
-    exhibits.push({ turn, piece, speed: 0.25 + i * 0.05 });
-  }
-  // a slim picture light washing the top
-  const wash = new THREE.SpotLight(0xffd9a0, 6, 4.5, 0.75, 0.7, 1.6);
+    riser.add(piece);
+    exhibits.push({ piece });
+  });
+  // a warm task light over the bench
+  const wash = new THREE.SpotLight(0xffd9a0, 7, 4.5, 0.75, 0.7, 1.6);
   wash.position.set(-1.7, 2.9, 2.9); wash.target.position.set(-1.7, 0.9, 1.55);
   scene.add(wash, wash.target);
 }
-target(cabinet, "built", "Built", new THREE.Vector3(-1.7, 1.75, 1.55));
-function stepExhibits(dt) { exhibits.forEach((e) => { e.turn.rotation.y += dt * e.speed; }); }
+target(bench, "built", "Built", new THREE.Vector3(-1.95, 1.95, 1.55));
+
+const _v = new THREE.Vector3();
+function stepPrinter(dt, t) {
+  const p = printer, P = PRINTS[p.job], part = p.parts[p.job];
+  const H = 0.17; // tallest part plus a little
+  if (p.rest > 0) {
+    p.rest -= dt;
+    if (p.rest <= 0) { // clear the bed and start the next project
+      part.visible = false;
+      p.job = (p.job + 1) % PRINTS.length; p.progress = 0;
+      p.spoolFil.color.setHex(PRINTS[p.job].color);
+    }
+  } else {
+    part.visible = true;
+    p.progress = Math.min(1, p.progress + dt / 26);
+    if (p.progress >= 1) p.rest = 4;
+  }
+  const layer = p.BED_TOP + p.progress * H;
+  // head wanders over the part while printing, parks when done
+  const printing = p.rest <= 0;
+  const hx = printing ? Math.sin(t * 3.1) * 0.05 + Math.sin(t * 7.3) * 0.015 : 0.2;
+  const by = printing ? Math.sin(t * 2.3) * 0.045 + Math.sin(t * 5.9) * 0.012 : 0.1;
+  p.car.position.x = hx;
+  p.bedG.position.z = by;
+  p.xg.position.y = 0.08 + layer + 0.071;
+  p.car.position.z = -0.05;
+  // clip plane in world space at the current layer
+  p.bedG.updateMatrixWorld();
+  _v.set(0, 0, 0).applyMatrix4(p.bedG.matrixWorld);
+  p.clip.constant = _v.y + layer;
+  p.spool.rotation.x -= dt * (printing ? 0.4 : 0);
+  // filament tube from the spool to the head
+  const a = new THREE.Vector3(0.12, 0.62 + 0.03, -0.03), b = new THREE.Vector3(hx, p.xg.position.y + 0.06, 0.0);
+  const mid = a.clone().lerp(b, 0.5).add(new THREE.Vector3(0.05, 0.12, 0.08));
+  p.tube.geometry.dispose();
+  p.tube.geometry = new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a, mid, b), 16, 0.004, 5);
+  // display
+  if (t > p.lcdNext) {
+    p.lcdNext = t + 0.5;
+    const g = p.lcdC.getContext("2d");
+    g.fillStyle = "#0b1a22"; g.fillRect(0, 0, 256, 96);
+    g.fillStyle = "#9fe7ff"; g.font = "600 18px 'IBM Plex Mono', monospace"; g.textBaseline = "top";
+    g.fillText(printing ? "PRINTING" : "DONE", 12, 10);
+    g.font = "500 17px 'IBM Plex Mono', monospace"; g.fillText(P.name, 12, 36);
+    g.strokeStyle = "#9fe7ff"; g.strokeRect(12, 66, 232, 16); g.fillStyle = "#9fe7ff"; g.fillRect(14, 68, 228 * p.progress, 12);
+    p.lcdTex.needsUpdate = true;
+  }
+}
 
 // ---------- a reading corner: round rug, beanbag, record player ----------
 let vinyl;
@@ -1089,7 +1189,7 @@ const VIEWS = {
   home: [new THREE.Vector3(7.8, 6.1, 9.8), new THREE.Vector3(-0.2, 1.1, -0.6)],
   work: [new THREE.Vector3(0.6, 3.0, 2.6), new THREE.Vector3(-3.0, 1.8, -2.95)],
   about: [new THREE.Vector3(3.9, 2.5, 1.3), new THREE.Vector3(1.55, 1.35, -2.6)],
-  built: [new THREE.Vector3(0.9, 2.1, 4.9), new THREE.Vector3(-1.7, 1.05, 1.55)],
+  built: [new THREE.Vector3(0.5, 2.15, 4.7), new THREE.Vector3(-1.7, 1.12, 1.55)],
   contact: [new THREE.Vector3(6.6, 2.5, 5.9), new THREE.Vector3(3.9, 1.2, 2.2)],
 };
 let narrow = false;
@@ -1231,11 +1331,11 @@ canvas.addEventListener("pointermove", (e) => {
   lastInput = clock.elapsedTime;
   if (current !== "home" || e.pointerType === "touch") return;
   setHover(pick(e));
-  const ex = hovered === cabinet ? pickExhibit() : null;
+  const ex = hovered === bench ? pickExhibit() : null;
   const b = hovered === rack ? pickBlade() : null;
   if (ex) {
     tip.innerHTML = "";
-    const s1 = document.createElement("span"); s1.className = "state"; s1.dataset.kind = "merged"; s1.textContent = "built";
+    const s1 = document.createElement("span"); s1.className = "state"; s1.dataset.kind = "merged"; s1.textContent = "printed";
     const s2 = document.createElement("span"); s2.textContent = ex.el.querySelector("h3").textContent + " · " + ex.el.querySelector(".tag").textContent;
     tip.append(s1, s2);
     tip.style.transform = `translate(${e.clientX + 16}px, ${e.clientY + 14}px)`;
@@ -1262,7 +1362,7 @@ canvas.addEventListener("pointerup", (e) => {
   const g = pick(e);
   tip.hidden = true;
   if (g === rack) { const b = pickBlade(); open("work", b ? b.i : null); return; }
-  if (g === cabinet) { const x = pickExhibit(); open("built", x ? x.i : null); return; }
+  if (g === bench) { const x = pickExhibit(); open("built", x ? x.i : null); return; }
   if (g) open(g.userData.key);
 });
 
@@ -1303,7 +1403,7 @@ renderer.setAnimationLoop(() => {
   if (idle) controls.autoRotateSpeed = 0.28 * Math.sin((t - lastInput) * 0.09);
   controls.update();
   const mdt = reduced ? 0 : dt;
-  stepExhibits(mdt);
+  stepPrinter(mdt, reduced ? 0 : t);
   if (vinyl) vinyl.rotation.y -= mdt * 3.5; // 33⅓ rpm, near enough
   stepLife(mdt, reduced ? 0 : t);
   tickClock();
