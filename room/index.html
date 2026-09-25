@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Harsh Raj</title>
+<meta name="description" content="Harsh Raj works on Kubernetes internals and security in CNCF projects, testing whether systems do what they report.">
+<meta property="og:title" content="Harsh Raj">
+<meta property="og:description" content="Kubernetes internals and security. I test whether systems do what they report.">
+<meta name="theme-color" content="#151b26">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='18' y='8' width='28' height='48' rx='4' fill='%23222935'/%3E%3Ccircle cx='38' cy='20' r='3' fill='%23f2c46d'/%3E%3Ccircle cx='38' cy='32' r='3' fill='%239db4ff'/%3E%3Ccircle cx='38' cy='44' r='3' fill='%239db4ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css?v=1790279426">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<div id="intro" aria-hidden="true">
+  <p class="intro-name">Harsh Raj</p>
+  <p class="intro-sub">setting up the room</p>
+</div>
+
+<canvas id="room" aria-hidden="true"></canvas>
+<div id="labels" aria-hidden="true"></div>
+<div id="tip" aria-hidden="true" hidden></div>
+
+<header class="top">
+  <a class="brand" href="#" data-go="home">
+    <span class="name">Harsh Raj</span>
+    <span class="role">Kubernetes internals &amp; security</span>
+  </a>
+  <nav class="menu" aria-label="Sections">
+    <button type="button" data-go="work">Findings</button>
+    <button type="button" data-go="built">Built</button>
+    <button type="button" data-go="about">About</button>
+    <button type="button" data-go="contact">Contact</button>
+    <button type="button" class="plain-toggle" id="plain-toggle">Plain view</button>
+  </nav>
+</header>
+
+<p class="hint" id="hint">Drag to look around. Click an object to open it. · <a href="../">text version</a></p>
+<p class="tally" aria-live="polite"><b data-stat="prs">11</b> pull requests · <b data-stat="projects">7</b> CNCF projects · <b data-stat="merged">3</b> merged</p>
+
+<aside id="panel" aria-live="polite">
+  <button type="button" class="back" id="back">← Back to the room</button>
+
+  <section class="sheet" data-panel="about" id="about">
+    <p class="eyebrow">The desk</p>
+    <h2>About</h2>
+    <p class="lead">I test whether systems do what they report. Mostly in CNCF projects: controllers, admission, policy engines and autoscaling.</p>
+    <p>I'm a final-year B.Tech student in Computer Science (Cybersecurity and Forensics) at UPES, graduating in 2027. Most of my work starts from a system saying one thing while doing another, and ends with a fix and a test that proves it.</p>
+    <h3>Experience</h3>
+    <dl class="roles">
+      <div><dt>Software Developer Intern, IBM</dt><dd>Jun – Jul 2026. A multilingual RAG assistant over LLaMA 3.2, with a one-click risk report built from live geolocation, weather, air quality and disaster data.</dd></div>
+      <div><dt>Cybersecurity Intern, Safepay</dt><dd>Jun – Jul 2025. Triaged 50+ SIEM alerts and ran Nmap and OpenVAS assessments that surfaced 15+ exposed services, written up as playbooks the team adopted.</dd></div>
+    </dl>
+  </section>
+
+  <section class="sheet" data-panel="work" id="work">
+    <p class="eyebrow">The rack · status is live from GitHub</p>
+    <h2>Findings</h2>
+    <ol class="log">
+      <li class="entry" data-pr="kedacore/keda#8193">
+        <p class="meta"><span class="state" data-state>merged</span> kedacore/keda #8193</p>
+        <h3>A connection pool that never let go</h3>
+        <p>The external scaler released a pooled gRPC connection only once it reached Shutdown, which only its own cleanup could trigger. Every address and TLS combination ever configured kept a connection and a goroutine for the life of the process.</p>
+        <p class="measure">Measured on a real operator and API server: held connections 5 → 10 → 15 across three cycles before, 0 → 0 → 0 after.</p>
+        <a href="https://github.com/kedacore/keda/pull/8193">View PR</a>
+      </li>
+      <li class="entry" data-pr="kyverno/kyverno#17608">
+        <p class="meta"><span class="state" data-state>merged</span> kyverno/kyverno #17608 · #17612</p>
+        <h3>A policy check that passed while checking nothing</h3>
+        <p>The Kyverno CLI resolved no resource kinds for namespaced validating policies, so they ran against an empty set and reported a clean pass. Fixed and backported to the release branch.</p>
+        <a href="https://github.com/kyverno/kyverno/pull/17608">View PR</a>
+      </li>
+      <li class="entry" data-pr="pipe-cd/pipecd#7412">
+        <p class="meta"><span class="state" data-state>open</span> pipe-cd/pipecd #7412</p>
+        <h3>A rollback reported as synced on the old revision</h3>
+        <p>ECS rollbacks tagged the service with the target commit instead of the one actually running, so the app showed as synced while running the old revision.</p>
+        <a href="https://github.com/pipe-cd/pipecd/pull/7412">View PR</a>
+      </li>
+      <li class="entry" data-pr="kgateway-dev/kgateway#14749">
+        <p class="meta"><span class="state" data-state>open</span> kgateway-dev/kgateway #14749</p>
+        <h3>Accepted, while the backend was rejected</h3>
+        <p>A BackendConfigPolicy with an invalid CA certificate reported Accepted while Envoy refused the cluster. The certificate is now validated and the policy names the Secret at fault.</p>
+        <a href="https://github.com/kgateway-dev/kgateway/pull/14749">View PR</a>
+      </li>
+      <li class="entry" data-pr="kyverno/kyverno#17620">
+        <p class="meta"><span class="state" data-state>open</span> kyverno/kyverno #17620</p>
+        <h3>One patch value that crashed the webhook</h3>
+        <p>An unrecovered panic when a MutatingPolicy's JSON patch sets a list of object initializers took down the mutating webhook and failed every affected admission request.</p>
+        <a href="https://github.com/kyverno/kyverno/pull/17620">View PR</a>
+      </li>
+      <li class="entry" data-pr="openkruise/agents#1001">
+        <p class="meta"><span class="state" data-state>open</span> openkruise/agents #1001</p>
+        <h3>Claim labels overwriting controller labels</h3>
+        <p>Labels propagated from a SandboxClaim could overwrite labels the controller owns. Reserved-prefix labels are now filtered out of propagation.</p>
+        <a href="https://github.com/openkruise/agents/pull/1001">View PR</a>
+      </li>
+      <li class="entry" data-pr="kubeedge/kubeedge#7307">
+        <p class="meta"><span class="state" data-state>open</span> kubeedge/kubeedge #7306 · #7307</p>
+        <h3>Offline edge nodes that could not start pods</h3>
+        <p>Edge nodes lost the ability to start pods that mount a service account token while offline. The fixes query cached tokens by key and fall back to the cached token when refresh fails.</p>
+        <a href="https://github.com/kubeedge/kubeedge/pull/7307">View PR</a>
+      </li>
+      <li class="entry" data-pr="volcano-sh/volcano#6002">
+        <p class="meta"><span class="state" data-state>open</span> volcano-sh/volcano #6002</p>
+        <h3>HyperNode members matched too loosely</h3>
+        <p>Enforces exact matching for HyperNode-typed members.</p>
+        <a href="https://github.com/volcano-sh/volcano/pull/6002">View PR</a>
+      </li>
+    </ol>
+  </section>
+
+  <section class="sheet" data-panel="built" id="built">
+    <p class="eyebrow">The gate</p>
+    <h2>Built</h2>
+    <article class="build">
+      <h3>sigstore-guard</h3>
+      <p class="tag">Go · Kubernetes · Sigstore · TUF</p>
+      <p>The gate in the room is this. A validating admission webhook, about 4,000 lines of Go, that rejects pods whose images carry no Sigstore signature from an accepted signer. The trust root is anchored in TUF, so key rotation reaches clusters as a metadata refresh with no redeploy. The API server's failurePolicy and the policy's own failOpen are kept as two separate controls.</p>
+      <a href="https://github.com/harshrajdebug/sigstore-guard">Source</a>
+    </article>
+    <article class="build">
+      <h3>PhishArmor</h3>
+      <p class="tag">Python · PyTorch · Transformers</p>
+      <p>A multimodal phishing detector combining URL, text and screenshot models, with SHAP and Grad-CAM explanations. Along the way I found 37.3% duplicate crops leaking between train and test in a public benchmark, which moved top-1 retrieval accuracy from 0.859 to 0.668.</p>
+    </article>
+    <article class="build">
+      <h3>Darkscan</h3>
+      <p class="tag">Go · Tor · Forensics</p>
+      <p>A concurrent scanner that fingerprints .onion services across seven protocols through a Tor SOCKS5 proxy, with a dependency-free EXIF parser that recovers GPS and camera metadata.</p>
+    </article>
+  </section>
+
+  <section class="sheet" data-panel="contact" id="contact">
+    <p class="eyebrow">The mailbox</p>
+    <h2>Contact</h2>
+    <p class="lead">Open to internships and to talking about any of the work here.</p>
+    <p class="mail"><span id="mail">harshrajdebug@gmail.com</span> <button type="button" id="copy">Copy</button></p>
+    <ul class="elsewhere">
+      <li><a href="https://github.com/harshrajdebug">github.com/harshrajdebug</a></li>
+      <li><a href="https://linkedin.com/in/harshraj2789">linkedin.com/in/harshraj2789</a></li>
+    </ul>
+  </section>
+</aside>
+
+<script src="live.js?v=1790279426"></script>
+<script type="module" src="scene.js?v=1790279426"></script>
+</body>
+</html>
