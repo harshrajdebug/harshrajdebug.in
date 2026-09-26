@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Harsh Raj · City</title>
+<meta name="description" content="Harsh Raj's work as a small city at night. Every building is a part of it, and nine bugs are hiding in the streets.">
+<meta name="theme-color" content="#0d1024">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ffd400'/%3E%3Ctext x='16' y='22' font-family='Arial Black,Arial' font-weight='900' font-size='15' text-anchor='middle' fill='%230e0e0f'%3EHR%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="city.css?v=3">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<!-- Boot sequence: painted from static HTML so it shows on the first frame. -->
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot__stars"></div>
+  <p class="boot__word"><span>H</span><span>A</span><span>R</span><span>S</span><span>H</span><span class="boot__gap"> </span><span>R</span><span>A</span><span>J</span><i class="boot__dot"></i></p>
+  <p class="boot__status" id="boot-status">booting the cluster</p>
+</div>
+
+<canvas id="city" aria-label="A small city at night. Each building is a section of the site." tabindex="0"></canvas>
+<div id="labels" aria-hidden="true"></div>
+
+<header class="bar bar--top">
+  <a class="logo" href="../">Harsh Raj<i></i></a>
+  <div class="bar__actions">
+    <button class="pill" id="walk" type="button" aria-pressed="false">Walk the streets</button>
+    <a class="pill pill--ghost" href="../">Classic site</a>
+  </div>
+</header>
+
+<nav class="dock" aria-label="Buildings">
+  <button type="button" data-go="about">About</button>
+  <button type="button" data-go="findings">Findings</button>
+  <button type="button" data-go="built">Built</button>
+  <button type="button" data-go="contact">Contact</button>
+  <button type="button" data-go="room">Room</button>
+</nav>
+
+<div class="counter" aria-live="polite"><span class="counter__bug" aria-hidden="true"></span><span id="bug-count">0</span>/9 bugs found</div>
+
+<p class="hint" id="hint">Drag to look around · click a lit building · something is hiding in these streets</p>
+
+<p class="walkhelp" id="walkhelp" hidden>W A S D or arrows to walk · drag to look · Esc to leave</p>
+
+<!-- Guide -->
+<aside class="guide" id="guide" aria-live="polite" hidden>
+  <div class="guide__face" aria-hidden="true">
+    <svg viewBox="0 0 48 48"><path d="M8 20 L12 6 L20 15 Q24 14 28 15 L36 6 L40 20 Q43 27 40 34 Q34 43 24 43 Q14 43 8 34 Q5 27 8 20Z" fill="#c9844a"/><path d="M13 23 Q17 20 20 24 M28 24 Q31 20 35 23" stroke="#3a2412" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="17" cy="27" r="2.6" fill="#1b1206"/><circle cx="31" cy="27" r="2.6" fill="#1b1206"/><path d="M22 31 L26 31 L24 33.5Z" fill="#6b3a2a"/><path d="M24 33.5 Q22 37 19 36 M24 33.5 Q26 37 29 36" stroke="#3a2412" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+  </div>
+  <div class="guide__body">
+    <p class="guide__name">Pixel <span>city guide</span> <span class="guide__step" id="guide-step">1 / 6</span></p>
+    <p class="guide__text" id="guide-text"></p>
+    <div class="guide__actions">
+      <button type="button" class="pill pill--ghost" id="guide-later">Not now</button>
+      <button type="button" class="pill pill--tag" id="guide-go"></button>
+    </div>
+  </div>
+  <button type="button" class="guide__close" id="guide-close" aria-label="Close the guide">×</button>
+</aside>
+<button type="button" class="guide-chip" id="guide-chip" hidden>Pixel · <span id="guide-chip-text"></span></button>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<!-- Panels: the content of each building. -->
+<aside class="panel" id="panel" aria-label="Building" hidden>
+  <button type="button" class="panel__back" id="panel-back">← Back to the city</button>
+  <div class="panel__scroll" id="panel-scroll">
+
+    <section class="sheet" data-panel="about">
+      <p class="kicker">The lighthouse · About</p>
+      <h2>I test whether systems do what they report.</h2>
+      <p>Mostly Kubernetes, mostly CNCF projects. When something says it passed, I check what it checked. Most of what I find is a status that says one thing while the system does another.</p>
+      <p>Contributing to OpenKruise, PipeCD and kgateway. Final year B.Tech CSE (Cybersecurity and Forensics) at UPES, graduating 2027.</p>
+      <h3>Places I've been</h3>
+      <ul class="rows">
+        <li><b>IBM</b> <span>Software developer intern · 2026</span> A RAG assistant and a one-click risk report</li>
+        <li><b>SafePay</b> <span>Cybersecurity intern · 2025</span> 50+ SIEM alerts triaged, 15+ exposed services found</li>
+      </ul>
+      <h3>Reviews that got acted on</h3>
+      <ul class="rows">
+        <li><a href="https://github.com/openkruise/agents/pull/958">OpenKruise #958</a> Two credential leaks in the proxy logs. The author fixed the first within the hour.</li>
+        <li><a href="https://github.com/pipe-cd/pipecd/pull/7320">PipeCD #7320</a> The cancel test was watching the wrong process. The author adopted the corrected test.</li>
+      </ul>
+    </section>
+
+    <section class="sheet" data-panel="findings">
+      <p class="kicker">Headquarters · Findings</p>
+      <h2>Nine cases. What the system claimed, and what it did.</h2>
+      <ol class="cases" id="cases"></ol>
+      <p class="small">Status is live from GitHub.</p>
+    </section>
+
+    <section class="sheet" data-panel="built">
+      <p class="kicker">The workshop · Built</p>
+      <h2>Things I built.</h2>
+      <ul class="rows rows--big">
+        <li><a href="https://github.com/harshrajdebug/sigstore-guard"><b>sigstore-guard ↗</b></a> A Kubernetes admission webhook that turns away images not signed by someone it trusts.</li>
+        <li><b>PhishArmor</b> A phishing detector. On the way, found 37.3% duplicate crops leaking between train and test in a public benchmark.</li>
+        <li><b>Darkscan</b> A Tor hidden service scanner with an EXIF parser that finds where photos were taken.</li>
+      </ul>
+    </section>
+
+    <section class="sheet" data-panel="contact">
+      <p class="kicker">The post office · Contact</p>
+      <h2>Always open.</h2>
+      <p class="big"><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a></p>
+      <ul class="rows">
+        <li><a href="https://github.com/harshrajdebug">GitHub ↗</a></li>
+        <li><a href="https://linkedin.com/in/harshraj2789">LinkedIn ↗</a></li>
+        <li>Dehradun, India · IST, UTC+05:30</li>
+      </ul>
+      <h3>Log</h3>
+      <ol class="rows rows--log">
+        <li><time>26 / 09 / 2026</time> <a href="https://github.com/kgateway-dev/kgateway/pull/14760">Opened kgateway #14760</a></li>
+        <li><time>25 / 09 / 2026</time> <a href="https://github.com/openkruise/agents/pull/958">Review on OpenKruise #958</a></li>
+        <li><time>23 / 09 / 2026</time> <a href="https://github.com/pipe-cd/pipecd/pull/7412">Opened PipeCD #7412, OpenKruise #1001, kgateway #14749</a></li>
+        <li><time>22 / 09 / 2026</time> <a href="https://github.com/kedacore/keda/pull/8193">KEDA #8193 merged</a></li>
+        <li><time>17 / 09 / 2026</time> <a href="https://github.com/kyverno/kyverno/pull/17608">Kyverno #17608 merged</a></li>
+      </ol>
+    </section>
+
+    <section class="sheet" data-panel="room">
+      <p class="kicker">The house · Room</p>
+      <h2>My room, in 3D. There's a cat.</h2>
+      <p>A desk, a laptop, a 3D printer and a record player. It looks a lot like the guide.</p>
+      <p><a class="pill pill--tag" href="../room/">Go inside →</a></p>
+    </section>
+
+    <section class="sheet" data-panel="project">
+      <p class="kicker" id="project-kicker"></p>
+      <h2 id="project-title"></h2>
+      <ol class="cases" id="project-cases"></ol>
+    </section>
+
+  </div>
+</aside>
+
+<noscript><p class="noscript">This page is a 3D city and needs JavaScript. <a href="../">Open the classic site.</a></p></noscript>
+
+<script type="module" src="city.js?v=4"></script>
+</body>
+</html>
