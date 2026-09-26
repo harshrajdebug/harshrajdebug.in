@@ -3,59 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>harsh raj</title>
-<meta name="description" content="Harsh Raj. I test whether systems do what they report, mostly in Kubernetes and CNCF projects.">
-<style>pre { white-space: pre-wrap; }</style>
+<title>Harsh Raj</title>
+<meta name="description" content="Harsh Raj tests whether systems do what they report, mostly in Kubernetes and CNCF projects.">
+<meta name="theme-color" content="#ffd400">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ffd400'/%3E%3Ctext x='16' y='22' font-family='Arial Black,Arial' font-weight='900' font-size='15' text-anchor='middle' fill='%230e0e0f'%3EHR%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=4">
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-<pre>
-harsh raj's home on the internet. unlike most of what i debug, this page does what it says.
 
-i test whether systems do what they report. mostly kubernetes, mostly <a href="https://www.cncf.io/projects/">cncf projects</a>.
-final year b.tech cse (cybersecurity and forensics) at upes, graduating 2027.
+<!-- Loader: counts the findings back up, then lifts the redaction off the name. -->
+<div class="loader" aria-hidden="true">
+  <div class="loader__top">
+    <p class="loader__count"><span data-count>00</span><span class="loader__of">/09</span></p>
+    <p class="loader__label">findings<br>re-checked</p>
+  </div>
+  <p class="wordmark loader__mark"><span class="redact">Harsh</span> <span class="redact">Raj</span></p>
+</div>
 
-things i found and fixed (status is live from github):
-<span data-pr="kyverno/kyverno#17608">[merged]</span> kyverno     a policy check that passed while checking nothing. <a href="https://github.com/kyverno/kyverno/pull/17608">fix</a>, <a href="https://github.com/kyverno/kyverno/pull/17612">backport</a>
-<span data-pr="kedacore/keda#8193">[merged]</span> keda        a connection pool that never let go. held connections went 5, 10, 15 before, 0 after. <a href="https://github.com/kedacore/keda/pull/8193">fix</a>
-<span data-pr="pipe-cd/pipecd#7412">[open]  </span> pipecd      a rollback reported as synced while still running the old revision. <a href="https://github.com/pipe-cd/pipecd/pull/7412">fix</a>
-<span data-pr="kgateway-dev/kgateway#14749">[open]  </span> kgateway    a policy that said Accepted while envoy rejected the backend. <a href="https://github.com/kgateway-dev/kgateway/pull/14749">fix</a>
-<span data-pr="kyverno/kyverno#17620">[open]  </span> kyverno     one patch value that crashed the whole webhook. <a href="https://github.com/kyverno/kyverno/pull/17620">fix</a>
-<span data-pr="openkruise/agents#1001">[open]  </span> openkruise  claim labels overwriting labels the controller owns. <a href="https://github.com/openkruise/agents/pull/1001">fix</a>
-<span data-pr="kubeedge/kubeedge#7307">[open]  </span> kubeedge    offline edge nodes that could not start pods. <a href="https://github.com/kubeedge/kubeedge/pull/7307">fix</a>
-<span data-pr="volcano-sh/volcano#6002">[open]  </span> volcano     hypernode members matched too loosely. <a href="https://github.com/volcano-sh/volcano/pull/6002">fix</a>
+<header class="head">
+  <a class="head__mark" href="#top" aria-label="Harsh Raj, back to top">HR</a>
+  <p class="head__meta">Dehradun, India · <a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a></p>
+  <nav class="nav" aria-label="Sections">
+    <a class="nav__item is-active" href="#top">Home</a><span class="nav__slash">/</span>
+    <a class="nav__item" href="#about">About</a><span class="nav__slash">/</span>
+    <a class="nav__item" href="#findings">Findings</a><span class="nav__slash">/</span>
+    <a class="nav__item" href="#built">Built</a><span class="nav__slash">/</span>
+    <a class="nav__item" href="#log">Log</a><span class="nav__slash">/</span>
+    <a class="nav__item" href="room/">Room</a><span class="nav__slash">/</span>
+    <a class="nav__item" href="#contact">Contact</a>
+  </nav>
+</header>
 
-things i built:
-<a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard</a>   a kubernetes admission webhook that turns away images not signed by someone it trusts
-phisharmor       a phishing detector. on the way, found 37.3% duplicate crops leaking between train and test in a public benchmark
-darkscan         a tor hidden service scanner with an exif parser that finds where photos were taken
+<main id="top">
 
-places i've been:
-ibm        software developer intern, 2026. a rag assistant and a one-click risk report
-safepay    cybersecurity intern, 2025. 50+ siem alerts triaged, 15+ exposed services found
+  <!-- Hero: a live log where every claim sits next to what actually happened. -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero__sticky">
+      <div class="hero__frame">
+        <canvas class="hero__canvas" aria-hidden="true"></canvas>
+        <div class="hero__shade" aria-hidden="true"></div>
+        <div class="hero__top">
+          <p class="kicker kicker--light">/ Case file</p>
+          <p class="hero__lede">I test whether systems do what they report.</p>
+        </div>
+        <h1 class="wordmark hero__mark"><span class="redact">Harsh</span> <span class="redact">Raj</span></h1>
+      </div>
+    </div>
+  </section>
 
-find me on <a href="https://github.com/harshrajdebug">github</a> and <a href="https://linkedin.com/in/harshraj2789">linkedin</a>, or e-mail <a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a>
-i'm looking for internships.
-there's also <a href="room/">a 3d version of this page</a>, with a cat in it.
+  <section class="intro" id="about" aria-label="About">
+    <div class="gutters">
+      <p class="kicker">/ The lowdown</p>
+      <p class="statement" data-split>Mostly Kubernetes, mostly CNCF projects. When something says it passed, I check what it checked. Most of what I find is a status that says one thing while the system does another.</p>
+      <div class="intro__grid">
+        <div>
+          <p class="kicker">/ Now</p>
+          <p>Contributing to OpenKruise, PipeCD and kgateway. Final year B.Tech CSE (Cybersecurity and Forensics) at UPES, graduating 2027.</p>
+        </div>
+        <div>
+          <p class="kicker">/ Places I've been</p>
+          <ul class="places">
+            <li><span class="places__org">IBM</span><span class="places__role">Software developer intern · 2026</span><span class="places__note">A RAG assistant and a one-click risk report</span></li>
+            <li><span class="places__org">SafePay</span><span class="places__role">Cybersecurity intern · 2025</span><span class="places__note">50+ SIEM alerts triaged, 15+ exposed services found</span></li>
+          </ul>
+        </div>
+        <div>
+          <p class="kicker">/ Reviews that got acted on</p>
+          <ul class="reviews">
+            <li><a href="https://github.com/openkruise/agents/pull/958">OpenKruise #958</a> Two credential leaks in the proxy logs. The author fixed the first within the hour.</li>
+            <li><a href="https://github.com/pipe-cd/pipecd/pull/7320">PipeCD #7320</a> The cancel test was watching the wrong process. The author adopted the corrected test.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-my rule for everything on this page:
-if it says it passed, check what it checked.
-</pre>
-<script>
-// swap the [merged]/[open] tags for their current state on github
-fetch("https://api.github.com/search/issues?q=" + encodeURIComponent("author:harshrajdebug type:pr") + "&per_page=100")
-  .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
-  .then(function (d) {
-    var state = {};
-    d.items.forEach(function (it) {
-      var repo = it.repository_url.replace("https://api.github.com/repos/", "");
-      state[repo + "#" + it.number] = it.pull_request && it.pull_request.merged_at ? "merged" : it.state;
-    });
-    document.querySelectorAll("[data-pr]").forEach(function (el) {
-      var s = state[el.getAttribute("data-pr")];
-      if (s) el.textContent = ("[" + s + "]        ").slice(0, 8);
-    });
-  })
-  .catch(function () {});
-</script>
+  <!-- Findings: numbered like evidence markers. Status is fetched live from GitHub. -->
+  <section class="findings" id="findings" aria-label="Findings">
+    <div class="findings__pin">
+      <div class="gutters findings__head">
+        <h2 class="section-title">Findings <span class="section-title__count">[ 09 ]</span></h2>
+        <p class="findings__hint">Each one: what the system claimed, and what it actually did. <span class="findings__live">Status is live from GitHub.</span></p>
+      </div>
+      <div class="findings__track">
+        <article class="exhibit">
+          <p class="exhibit__tag">01</p>
+          <p class="exhibit__project">Kyverno <span data-pr="kyverno/kyverno#17608" class="state">merged</span></p>
+          <h3 class="exhibit__title">A policy check that passed while checking nothing.</h3>
+          <div class="exhibit__log"><p class="claim">kyverno test → pass</p><p class="real">rules evaluated → 0</p></div>
+          <p class="exhibit__links"><a href="https://github.com/kyverno/kyverno/pull/17608">Fix #17608</a> <a href="https://github.com/kyverno/kyverno/pull/17612">Backport #17612</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">02</p>
+          <p class="exhibit__project">KEDA <span data-pr="kedacore/keda#8193" class="state">merged</span></p>
+          <h3 class="exhibit__title">A connection pool that never let go.</h3>
+          <div class="exhibit__log"><p class="claim">scaler closed</p><p class="real">held connections → 5, 10, 15</p></div>
+          <p class="exhibit__links"><a href="https://github.com/kedacore/keda/pull/8193">Fix #8193</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">03</p>
+          <p class="exhibit__project">PipeCD <span data-pr="pipe-cd/pipecd#7412" class="state">open</span></p>
+          <h3 class="exhibit__title">A rollback reported as synced while still running the old revision.</h3>
+          <div class="exhibit__log"><p class="claim">application → Synced</p><p class="real">running → previous revision</p></div>
+          <p class="exhibit__links"><a href="https://github.com/pipe-cd/pipecd/pull/7412">Fix #7412</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">04</p>
+          <p class="exhibit__project">kgateway <span data-pr="kgateway-dev/kgateway#14749" class="state">open</span></p>
+          <h3 class="exhibit__title">A policy that said Accepted while Envoy rejected the backend.</h3>
+          <div class="exhibit__log"><p class="claim">policy → Accepted</p><p class="real">envoy → cluster rejected</p></div>
+          <p class="exhibit__links"><a href="https://github.com/kgateway-dev/kgateway/pull/14749">Fix #14749</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">05</p>
+          <p class="exhibit__project">kgateway <span data-pr="kgateway-dev/kgateway#14760" class="state">open</span></p>
+          <h3 class="exhibit__title">Backends with SPIFFE or IP certificates that could never pass verification.</h3>
+          <div class="exhibit__log"><p class="claim">verifySubjectAltNames → set</p><p class="real">spiffe backend → 503</p></div>
+          <p class="exhibit__links"><a href="https://github.com/kgateway-dev/kgateway/pull/14760">Fix #14760</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">06</p>
+          <p class="exhibit__project">Kyverno <span data-pr="kyverno/kyverno#17620" class="state">open</span></p>
+          <h3 class="exhibit__title">One patch value that crashed the whole webhook.</h3>
+          <div class="exhibit__log"><p class="claim">patch value → accepted</p><p class="real">webhook → panic</p></div>
+          <p class="exhibit__links"><a href="https://github.com/kyverno/kyverno/pull/17620">Fix #17620</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">07</p>
+          <p class="exhibit__project">OpenKruise <span data-pr="openkruise/agents#1001" class="state">open</span></p>
+          <h3 class="exhibit__title">Claim labels overwriting labels the controller owns.</h3>
+          <div class="exhibit__log"><p class="claim">claim labels → propagated</p><p class="real">controller labels → overwritten</p></div>
+          <p class="exhibit__links"><a href="https://github.com/openkruise/agents/pull/1001">Fix #1001</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">08</p>
+          <p class="exhibit__project">KubeEdge <span data-pr="kubeedge/kubeedge#7307" class="state">open</span></p>
+          <h3 class="exhibit__title">Offline edge nodes that could not start pods.</h3>
+          <div class="exhibit__log"><p class="claim">edge node → offline, token cached</p><p class="real">pod start → fails</p></div>
+          <p class="exhibit__links"><a href="https://github.com/kubeedge/kubeedge/pull/7307">Fix #7307</a></p>
+        </article>
+        <article class="exhibit">
+          <p class="exhibit__tag">09</p>
+          <p class="exhibit__project">Volcano <span data-pr="volcano-sh/volcano#6002" class="state">open</span></p>
+          <h3 class="exhibit__title">HyperNode members matched too loosely.</h3>
+          <div class="exhibit__log"><p class="claim">member → HyperNode</p><p class="real">match → not exact</p></div>
+          <p class="exhibit__links"><a href="https://github.com/volcano-sh/volcano/pull/6002">Fix #6002</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="where" aria-label="Projects">
+    <div class="gutters">
+      <p class="kicker">/ Where I've found bugs</p>
+    </div>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__row">
+        <span>KEDA</span><i>/</i><span>Kyverno</span><i>/</i><span>PipeCD</span><i>/</i><span>kgateway</span><i>/</i><span>OpenKruise</span><i>/</i><span>KubeEdge</span><i>/</i><span>Volcano</span><i>/</i>
+      </div>
+    </div>
+    <p class="visually-hidden">KEDA, Kyverno, PipeCD, kgateway, OpenKruise, KubeEdge and Volcano.</p>
+  </section>
+
+  <section class="built" id="built" aria-label="Things I built">
+    <div class="gutters">
+      <h2 class="section-title">Built <span class="section-title__count">[ 03 ]</span></h2>
+      <ul class="built__list">
+        <li class="built__item">
+          <p class="built__num">A</p>
+          <h3 class="built__name"><a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard <span class="arrow">↗</span></a></h3>
+          <p class="built__desc">A Kubernetes admission webhook that turns away images not signed by someone it trusts.</p>
+        </li>
+        <li class="built__item">
+          <p class="built__num">B</p>
+          <h3 class="built__name">PhishArmor</h3>
+          <p class="built__desc">A phishing detector. On the way, found 37.3% duplicate crops leaking between train and test in a public benchmark.</p>
+        </li>
+        <li class="built__item">
+          <p class="built__num">C</p>
+          <h3 class="built__name">Darkscan</h3>
+          <p class="built__desc">A Tor hidden service scanner with an EXIF parser that finds where photos were taken.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="log" id="log" aria-label="Log">
+    <div class="gutters">
+      <h2 class="section-title">Log</h2>
+      <ol class="log__list">
+        <li><time datetime="2026-09-26">26 / 09 / 2026</time><a href="https://github.com/kgateway-dev/kgateway/pull/14760">Opened kgateway #14760, a TLS verification regression for SPIFFE and IP backends</a></li>
+        <li><time datetime="2026-09-25">25 / 09 / 2026</time><a href="https://github.com/openkruise/agents/pull/958">Review on OpenKruise #958 found two credential leaks in logs</a></li>
+        <li><time datetime="2026-09-23">23 / 09 / 2026</time><a href="https://github.com/pipe-cd/pipecd/pull/7412">Opened PipeCD #7412, OpenKruise #1001 and kgateway #14749</a></li>
+        <li><time datetime="2026-09-22">22 / 09 / 2026</time><a href="https://github.com/kedacore/keda/pull/8193">KEDA #8193 merged</a></li>
+        <li><time datetime="2026-09-17">17 / 09 / 2026</time><a href="https://github.com/kyverno/kyverno/pull/17608">Kyverno #17608 merged, backported in #17612</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="room" aria-label="The 3D room">
+    <a class="room__card" href="room/">
+      <span class="kicker kicker--light">/ Also</span>
+      <span class="room__title">There's a 3D version of this site, with a cat in it.</span>
+      <span class="room__cta">Enter the room <span class="arrow">→</span></span>
+    </a>
+  </section>
+
+</main>
+
+<footer class="foot" id="contact">
+  <div class="gutters foot__cols">
+    <div>
+      <p class="kicker">/ Reach out</p>
+      <p><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a></p>
+    </div>
+    <div>
+      <p class="kicker">/ Find me</p>
+      <p>Dehradun, India<br>IST, UTC+05:30</p>
+    </div>
+    <div>
+      <p class="kicker">/ Elsewhere</p>
+      <p><a href="https://github.com/harshrajdebug">GitHub</a><br><a href="https://linkedin.com/in/harshraj2789">LinkedIn</a></p>
+    </div>
+    <div>
+      <p class="kicker">/ Pages</p>
+      <p><a href="#findings">Findings</a><br><a href="#built">Built</a><br><a href="room/">Room</a><br><a href="text/">Text version</a></p>
+    </div>
+  </div>
+  <p class="gutters foot__rule">If it says it passed, check what it checked.</p>
+  <p class="wordmark foot__mark" aria-hidden="true">Harsh Raj</p>
+  <p class="gutters foot__legal"><span>Harsh Raj © MMXXVI</span><span>Looking for internships</span></p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="assets/site.js?v=4"></script>
 </body>
 </html>
