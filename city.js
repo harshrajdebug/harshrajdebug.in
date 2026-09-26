@@ -527,14 +527,14 @@ function makeInterior(key) {
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.36, 0.82), new THREE.MeshBasicMaterial({ map: screenTex(["harsh@city:~$", "claim ≠ reality", "go test ./...", "check what it checked"]) })); scr.position.set(0, 0.5, -0.47); scr.rotation.x = -0.18; lap.add(scr);
     const chair = mesh(scene, new THREE.BoxGeometry(1, 0.15, 1), std(0x2b2e40), -2.2, 0.95, -1.7); mesh(scene, new THREE.BoxGeometry(1, 1.2, 0.12), std(0x2b2e40), -2.2, 1.6, -1.25);
     void chair;
-    spot(lap, "about", "Who Harsh is", 1.3);
+    spot(lap, "about", "Who he is", 1.3);
     // bookshelf
     const shelf = new THREE.Group(); shelf.position.set(3.6, 0, -4.4); shelf.rotation.y = -0.6; scene.add(shelf);
     const sw = std(0x5b3f2c);
     const frame = new THREE.Mesh(new THREE.BoxGeometry(2.6, 4.2, 0.7), sw); frame.position.y = 2.1; frame.castShadow = true; shelf.add(frame);
     const bookCols = [0xd24a3a, 0x3a8fd2, 0xf2c94c, 0x5ac48a, 0x9a6ad0, 0xe9e3d2];
     for (let r = 0; r < 4; r++) { let x = -1.1; while (x < 1.05) { const w = 0.14 + Math.random() * 0.1, h = 0.6 + Math.random() * 0.25; const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.5), std(pick(bookCols))); b.position.set(x + w / 2, 0.35 + r * 1 + h / 2, 0.12); shelf.add(b); x += w + 0.03; } }
-    spot(shelf, "places", "Places Harsh has been", 2.8);
+    spot(shelf, "places", "Places he's been", 2.8);
     // frames on the wall
     const frames = new THREE.Group(); frames.position.set(-6.2, 3.8, 1.2); frames.rotation.y = Math.PI / 2; scene.add(frames);
     for (const [x, c] of [[-0.9, 0x3a8fd2], [0.9, 0xd24a3a]]) { const f = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 0.08), std(0x2b2e40)); f.position.x = x; frames.add(f); const art = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.8), std(c, { emissive: c, emissiveIntensity: 0.2 })); art.position.set(x, 0, 0.05); frames.add(art); }
@@ -640,7 +640,7 @@ function makeInterior(key) {
     const mb = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.8, 0.9), red); mb.position.y = 0.9; mb.castShadow = true; box2.add(mb);
     const mt = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.9, 16, 1, false, 0, Math.PI), red); mt.rotation.set(0, Math.PI / 2, Math.PI / 2); mt.position.y = 1.8; box2.add(mt);
     const slot = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.06, 0.02), new THREE.MeshBasicMaterial({ color: GOLD })); slot.position.set(0, 1.4, 0.46); box2.add(slot);
-    spot(box2, "contact", "Write to Harsh", 2.6);
+    spot(box2, "contact", "Write to him", 2.6);
     const notice = new THREE.Group(); notice.position.set(-7.2, 3.6, 1.6); notice.rotation.y = Math.PI / 2; scene.add(notice);
     const nb = new THREE.Mesh(new THREE.BoxGeometry(3.4, 2.4, 0.12), std(0xb88a58)); notice.add(nb);
     for (let i = 0; i < 5; i++) { const n = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.7), std(pick([0xf6f1e3, 0xf2c94c]))); n.position.set(-1.1 + (i % 3) * 1.1, 0.5 - Math.floor(i / 3) * 1, 0.07); n.rotation.z = (rnd() - 0.5) * 0.2; notice.add(n); }
@@ -953,14 +953,14 @@ $("#sound").addEventListener("click", () => {
 
 // ================================================================ guide
 const STEPS = [
-  { where: "city", text: "Hi, I'm Pixel, the city guide. Harsh built this city out of bugs found in real systems. The gold buildings are open to visitors. Start at the lighthouse. That's where Harsh works.", quest: "Visit the lighthouse", go: "about", until: "enter:about" },
-  { where: "about", text: "This is the office. Click the laptop to read who Harsh is, or the bookshelf for places Harsh has worked.", until: "card:about|card:places|card:reviews", ok: "Got it" },
+  { where: "city", text: "Hi, I'm Pixel, the city guide. Harsh built this city out of bugs he has found. The gold buildings are open to visitors. Start at the lighthouse. That's where he works.", quest: "Visit the lighthouse", go: "about", until: "enter:about" },
+  { where: "about", text: "This is his office. Click the laptop to read who he is, or the bookshelf for where he's worked.", until: "card:about|card:places|card:reviews", ok: "Got it" },
   { where: "any", text: "Headquarters is the tall gold tower next door. Nine cases pinned to one board.", quest: "Visit headquarters", go: "findings", until: "enter:findings" },
   { where: "findings", text: "Every card on that board is a case: what the system claimed, and what it actually did. Open one.", until: "card:case", ok: "Got it" },
   { where: "any", text: "Nine bugs escaped from that board and are loose in the streets. They glow green. Catch one and it tells you its case.", quest: "Find a bug in the city", go: "city", until: "bug" },
-  { where: "any", text: "Nice catch. The workshop with the smoking chimney is where Harsh builds things.", quest: "Visit the workshop", go: "built", until: "enter:built" },
+  { where: "any", text: "Nice catch. The workshop with the smoking chimney is where he builds things.", quest: "Visit the workshop", go: "built", until: "enter:built" },
   { where: "built", text: "Three things on the bench. Pick one up.", until: "card:sigstore|card:phisharmor|card:darkscan", ok: "Got it" },
-  { where: "any", text: "Want to say hi? The post office is always open, and there's a notice board with the latest work.", quest: "Visit the post office", go: "contact", until: "enter:contact" },
+  { where: "any", text: "Want to say hi? The post office is always open, and there's a notice board with his latest work.", quest: "Visit the post office", go: "contact", until: "enter:contact" },
 ];
 let guideOpen = false;
 function renderGuide() {
