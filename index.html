@@ -3,129 +3,142 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Harsh Raj · The City</title>
-<meta name="description" content="Harsh Raj tests whether systems do what they report. His work is a small city you can walk through: every lit building is part of it, and nine bugs are loose in the streets.">
-<meta name="theme-color" content="#1b1f33">
-<meta property="og:title" content="Harsh Raj · The City">
-<meta property="og:description" content="A small city you can walk through. Every building is part of Harsh Raj's work, and nine bugs are loose in the streets.">
+<title>HARSH_RAJ // SYS.PORTFOLIO</title>
+<meta name="description" content="Harsh Raj tests whether systems do what they report. Nine findings in CNCF projects, each one a status that said one thing while the system did another.">
+<meta name="theme-color" content="#0f1210">
+<meta property="og:title" content="HARSH_RAJ // SYS.PORTFOLIO">
+<meta property="og:description" content="Nine findings in CNCF projects, each one a status that said one thing while the system did another.">
 <meta property="og:url" content="https://harshrajdebug.in/">
 <link rel="canonical" href="https://harshrajdebug.in/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b1f33'/%3E%3Ctext x='14' y='22' font-family='Arial Black,Arial' font-weight='900' font-size='15' text-anchor='middle' fill='%23f6f5f2'%3EH%3C/text%3E%3Ccircle cx='24' cy='20' r='3.4' fill='%23f2c94c'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f1210'/%3E%3Ctext x='5' y='22' font-family='monospace' font-size='16' fill='%234ade80'%3E%24_%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Space+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="city.css?v=12">
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-} }
-</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="term.css?v=1">
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
+<div class="crt" aria-hidden="true"></div>
 
-<!-- Boot: the sky goes from night to dawn while the city builds. Static HTML so it paints on the first frame. -->
-<div class="boot" id="boot" data-state="night" aria-hidden="true">
-  <div class="boot__sky boot__sky--night"></div>
-  <div class="boot__sky boot__sky--dawn"></div>
-  <div class="boot__stars"></div>
-  <div class="boot__clouds"><i></i><i></i><i></i><i></i></div>
-  <div class="boot__center">
-    <p class="boot__word"><span>H</span><span>a</span><span>r</span><span>s</span><span>h</span><span class="boot__sun"></span></p>
-    <svg class="boot__block" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6 50 16v20L32 46 14 36V16z" fill="#2c3150"/><path d="M32 26 50 16v20L32 46z" fill="#232843"/><path d="M14 16 32 26v20L14 36z" fill="#343a5c"/><path d="M32 6 50 16 32 26 14 16z" fill="#f2c94c"/><rect x="19" y="24" width="4" height="5" fill="#ffd98a"/><rect x="25" y="27" width="4" height="5" fill="#ffd98a"/><rect x="38" y="27" width="4" height="5" fill="#ffd98a"/></svg>
-    <p class="boot__status" id="boot-status">Booting the cluster</p>
-  </div>
-</div>
+<div class="shell">
+  <header class="sys" aria-label="System status">
+    <dl class="sys__col">
+      <div><dt>SYS.NAME</dt><dd>HARSH_OS v1.0.0</dd></div>
+      <div><dt>SYS.AUTH</dt><dd class="ok">GUEST_ACCESS_GRANTED</dd></div>
+      <div><dt>SYS.NODE</dt><dd>harshrajdebug.in</dd></div>
+    </dl>
+    <dl class="sys__col sys__col--r">
+      <div><dt>STATUS</dt><dd class="ok">200</dd></div>
+      <div><dt>CLAIMS</dt><dd><span id="sys-claims">9</span> CHECKED</dd></div>
+      <div><dt>LOCAL</dt><dd id="sys-clock">IST</dd></div>
+    </dl>
+  </header>
 
-<canvas id="city" aria-label="A small city at night. The gold buildings can be entered." tabindex="0"></canvas>
-<div id="labels" aria-hidden="true"></div>
-<div class="fade" id="fade" aria-hidden="true"></div>
+  <section class="page page--boot" id="page-boot" aria-hidden="true">
+    <pre class="boot" id="boot"></pre>
+  </section>
 
-<header class="top">
-  <a class="logo" href="./" aria-label="Harsh Raj, back to the city">Harsh<i></i></a>
-  <div class="top__right">
-    <button class="btn" id="back-city" type="button" hidden>Back to City</button>
-    <button class="btn" id="fp" type="button">Enter First-Person</button>
-    <div class="tools" id="tools">
-      <button class="round" id="sound" type="button" aria-pressed="false" aria-label="Sound off">
-        <svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="sound-on" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><path class="sound-off" d="m16.5 9.5 5 5m0-5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <div class="tools__more" id="tools-more" hidden>
-        <button class="round" id="share" type="button" aria-label="Copy a link to this page">
-          <svg viewBox="0 0 24 24"><path d="M12 15V4m0 0L8 8m4-4 4 4M5 13v6h14v-6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button class="round" id="daynight" type="button" aria-label="Switch to day">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </button>
-        <button class="round" id="reset" type="button" aria-label="Start the tour again">
-          <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+  <main class="screen" id="screen">
+
+    <section class="page" id="page-home" data-page="home" aria-labelledby="h-home">
+      <h1 class="sr-only" id="h-home">Harsh Raj</h1>
+<pre class="ascii" aria-hidden="true"> __  __  ______  ____    ____    __  __
+/\ \/\ \/\  _  \/\  _`\ /\  _`\ /\ \/\ \
+\ \ \_\ \ \ \L\ \ \ \L\ \ \,\L\_\ \ \_\ \
+ \ \  _  \ \  __ \ \ ,  /\/_\__ \\ \  _  \
+  \ \ \ \ \ \ \/\ \ \ \\ \ /\ \L\ \ \ \ \ \
+   \ \_\ \_\ \_\ \_\ \_\ \_\ `\____\ \_\ \_\
+    \/_/\/_/\/_/\/_/\/_/\/ /\/_____/\/_/\/_/</pre>
+
+      <p class="cmd"><span class="ps">$</span> whoami</p>
+      <p class="out">Harsh Raj. I test whether systems do what they report -- mostly Kubernetes, mostly CNCF projects. When something says it passed, I check what it checked. Most of what I find is a status that says one thing while the system does another.</p>
+
+      <p class="cmd"><span class="ps">$</span> cat status.txt</p>
+      <dl class="kv">
+        <div><dt>LOCATION</dt><dd>Dehradun, India -- IST, UTC+05:30</dd></div>
+        <div><dt>FOCUS</dt><dd>Kubernetes controllers -- admission webhooks -- status that lies -- supply chain</dd></div>
+        <div><dt>CONTRIBUTING</dt><dd>OpenKruise -- PipeCD -- kgateway</dd></div>
+        <div><dt>CONTACT</dt><dd><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a></dd></div>
+        <div><dt>OPEN_TO_WORK</dt><dd class="ok">TRUE -- internships</dd></div>
+      </dl>
+
+      <p class="cmd"><span class="ps">$</span> cat record.txt</p>
+      <dl class="kv kv--wide">
+        <div><dt>KYVERNO</dt><dd>2026 Merged -- a policy check that passed while checking nothing <a class="pr" href="https://github.com/kyverno/kyverno/pull/17608" target="_blank" rel="noopener">#17608</a></dd></div>
+        <div><dt>KEDA</dt><dd>2026 Merged -- a connection pool that never let go <a class="pr" href="https://github.com/kedacore/keda/pull/8193" target="_blank" rel="noopener">#8193</a></dd></div>
+        <div><dt>OPENKRUISE</dt><dd>2026 Review acted on -- two credential leaks in the proxy logs <a class="pr" href="https://github.com/openkruise/agents/pull/958" target="_blank" rel="noopener">#958</a></dd></div>
+        <div><dt>PIPECD</dt><dd>2026 Review acted on -- the cancel test was watching the wrong process <a class="pr" href="https://github.com/pipe-cd/pipecd/pull/7320" target="_blank" rel="noopener">#7320</a></dd></div>
+        <div><dt>IN_REVIEW</dt><dd>2026 Seven more fixes -- see <a href="#work" data-go="work">02._WORK</a></dd></div>
+      </dl>
+
+      <p class="tip">TIP: <kbd>↑</kbd><kbd>↓</kbd> to navigate -- type <b>help</b> for commands</p>
+    </section>
+
+    <section class="page" id="page-work" data-page="work" aria-labelledby="h-work">
+      <p class="cmd"><span class="ps">$</span> <span id="h-work">ls -la /findings/</span></p>
+      <p class="dim">9 entries -- click a filename to expand -- click [OPEN] to read the case -- state is live from GitHub</p>
+      <div class="table" role="table" aria-label="Findings">
+        <div class="row row--hdr" role="row"><span role="columnheader">NAME</span><span role="columnheader">PROJECT</span><span role="columnheader">STATE</span><span role="columnheader">CLAIMED</span><span role="columnheader">DESCRIPTION</span></div>
+        <div id="files" role="rowgroup"></div>
       </div>
-      <button class="round" id="settings" type="button" aria-expanded="false" aria-label="Settings">
-        <svg class="ico-open" viewBox="0 0 24 24"><path d="M4 7h10m4 0h2M4 17h4m4 0h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="10" cy="17" r="2" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
-        <svg class="ico-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
+      <p class="cmd"><span class="ps">$</span> ls -la /built/</p>
+      <div class="table" role="table" aria-label="Built">
+        <div class="row row--hdr" role="row"><span role="columnheader">NAME</span><span role="columnheader">STACK</span><span role="columnheader">STATE</span><span role="columnheader">NOTE</span><span role="columnheader">DESCRIPTION</span></div>
+        <div class="row" role="row"><a class="fname" href="https://github.com/harshrajdebug/sigstore-guard" target="_blank" rel="noopener">SIGSTORE_GUARD.hook</a><span>Go</span><span class="st st--open">public</span><span>--</span><span>Admission webhook that turns away images not signed by someone it trusts</span></div>
+        <div class="row" role="row"><span class="fname fname--plain">PHISHARMOR.nn</span><span>PyTorch</span><span class="st">private</span><span class="ok">37.3% leak</span><span>Phishing detector that caught a duplicate-crop leak in its own test split: top-1 0.859 → 0.668</span></div>
+        <div class="row" role="row"><span class="fname fname--plain">DARKSCAN.onion</span><span>Go</span><span class="st">private</span><span>--</span><span>Tor hidden service scanner with an EXIF parser that finds where photos were taken</span></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-about" data-page="about" aria-labelledby="h-about">
+      <p class="cmd"><span class="ps">$</span> <span id="h-about">cat about.md</span></p>
+      <div class="prose">
+        <p>The bug I keep finding is the same one wearing different clothes: a system reports a state it is not in. A policy engine says <b>pass</b> after checking zero resources. A gateway marks a policy <b>Accepted</b> while Envoy rejects the backend. A rollback says <b>Synced</b> while the old revision runs.</p>
+        <p>Nobody files these, because nothing looks broken. The dashboard is green. So I read the status, then go and look at what actually happened -- the goroutine count, the Envoy config, the task set tag -- and write down the difference.</p>
+        <p>Every fix I send comes with the measurement that shows the gap. A claim I can't reproduce doesn't get posted.</p>
+        <p class="dim">Contributing to OpenKruise, PipeCD and kgateway. Looking for internships.</p>
+        <p><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a> -- <a href="https://github.com/harshrajdebug" target="_blank" rel="noopener">github.com/harshrajdebug</a> -- <a href="https://linkedin.com/in/harshraj2789" target="_blank" rel="noopener">linkedin.com/in/harshraj2789</a></p>
+      </div>
+    </section>
+
+    <section class="page" id="page-resume" data-page="resume" aria-labelledby="h-resume">
+      <p class="cmd"><span class="ps">$</span> <span id="h-resume">cat resume.txt</span></p>
+      <div class="prose">
+        <h2 class="c">// experience</h2>
+        <p class="role">Software Developer Intern</p>
+        <dl class="kv kv--tight"><div><dt>Company</dt><dd>IBM</dd></div><div><dt>Dates</dt><dd>2026.06 -- 2026.07</dd></div></dl>
+        <ul class="dash"><li>Built a multilingual disaster-response assistant in Python and Streamlit on a RAG pipeline over LLaMA 3.2, with speech-to-text and text-to-speech.</li><li>Added a one-click risk report pulling geolocation, air quality, weather and disaster data.</li></ul>
+        <p class="role">Cybersecurity Intern</p>
+        <dl class="kv kv--tight"><div><dt>Company</dt><dd>SafePay</dd></div><div><dt>Dates</dt><dd>2025.06 -- 2025.07</dd></div></dl>
+        <ul class="dash"><li>Triaged 50+ SIEM alerts by correlating event metadata, assets, severity and indicators of compromise.</li><li>Ran Nmap and OpenVAS assessments that surfaced 15+ exposed services and misconfigurations, and wrote the triage playbooks the team adopted.</li></ul>
+        <h2 class="c">// open source</h2>
+        <ul class="dash"><li>Merged: Kyverno #17608, KEDA #8193.</li><li>In review: PipeCD #7412, kgateway #14749 and #14760, Kyverno #17620, OpenKruise #1001, KubeEdge #7307, Volcano #6002.</li><li>Reviews acted on: OpenKruise #958, PipeCD #7320.</li></ul>
+        <h2 class="c">// skills</h2>
+        <ul class="dash"><li><b>Languages:</b> Go -- Python -- C++ -- Java -- SQL -- Bash -- JavaScript</li><li><b>Cloud native:</b> Kubernetes -- controller-runtime -- admission webhooks -- CRDs -- Helm -- kind -- Envoy -- gRPC -- Prometheus</li><li><b>Security:</b> OAuth 2.0 / OIDC -- PKI -- Sigstore / Cosign -- supply chain -- Nmap -- Burp Suite -- SIEM -- digital forensics</li><li><b>ML:</b> PyTorch -- Transformers -- scikit-learn -- RAG</li><li><b>Testing:</b> Ginkgo / Gomega -- pytest -- Playwright -- root cause analysis</li></ul>
+      </div>
+    </section>
+
+    <section class="page" id="page-case" data-page="case"></section>
+  </main>
+
+  <div class="cmdout" id="cmd-out" aria-live="polite"></div>
+  <div class="prompt">
+    <label class="prompt__ps" for="prompt">guest@harshrajdebug:<span id="cwd">~</span>$</label>
+    <input class="prompt__in" id="prompt" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type a command (try: help)">
+  </div>
+
+  <nav class="nav" aria-label="Modules">
+    <p class="nav__hint">root@harsh/nav &gt; SELECT MODULE [↑↓ arrows + ENTER or click]</p>
+    <div class="nav__items">
+      <a class="nav__item" href="#home" data-go="home">01._HOME</a>
+      <a class="nav__item" href="#work" data-go="work">02._WORK</a>
+      <a class="nav__item" href="#about" data-go="about">03._ABOUT</a>
+      <a class="nav__item" href="#resume" data-go="resume">04._RESUME</a>
     </div>
-  </div>
-</header>
-
-<aside class="controls" id="controls" aria-label="Controls">
-  <p class="controls__title">Controls <button type="button" id="controls-close" aria-label="Hide controls">×</button></p>
-  <dl>
-    <dt><kbd>Space</kbd> + drag</dt><dd>Pan</dd>
-    <dt>Drag</dt><dd>Rotate view</dd>
-    <dt>Mouse wheel</dt><dd>Zoom</dd>
-  </dl>
-</aside>
-
-<nav class="dock" aria-label="Buildings">
-  <button type="button" data-go="about">About</button>
-  <button type="button" data-go="findings">Findings</button>
-  <button type="button" data-go="built">Built</button>
-  <button type="button" data-go="contact">Contact</button>
-</nav>
-
-<div class="counters" aria-live="polite">
-  <span title="Buildings explored"><svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4m10-4h3a3 3 0 0 1-3 4M10 14h4v3h-4zm-2 5h8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg><b id="trophies">0</b>/4</span>
-  <i></i>
-  <span title="Bugs found"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 6.2L20 12l-5.8 2.8L12 21l-2.2-6.2L4 12l5.8-2.8z" fill="currentColor"/></svg><b id="stars">0</b>/9</span>
+  </nav>
 </div>
 
-<p class="pill-hint" id="hint">Select a gold building to go inside. Something is hiding in these streets.</p>
-<p class="pill-hint" id="hint-inside" hidden>⟳ drag to rotate · click the glowing things</p>
-<p class="pill-hint" id="walkhelp" hidden>W A S D to walk · drag to look · Esc to leave</p>
-
-<!-- Guide -->
-<aside class="guide" id="guide" aria-live="polite" hidden>
-  <div class="guide__head">
-    <span class="guide__face" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 20 L12 6 L20 15 Q24 14 28 15 L36 6 L40 20 Q43 27 40 34 Q34 43 24 43 Q14 43 8 34 Q5 27 8 20Z" fill="#d08a4e"/><path d="M13 23 Q17 20 20 24 M28 24 Q31 20 35 23" stroke="#3a2412" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="17" cy="27" r="2.6" fill="#1b1206"/><circle cx="31" cy="27" r="2.6" fill="#1b1206"/><path d="M22 31 L26 31 L24 33.5Z" fill="#6b3a2a"/></svg></span>
-    <span><b>Pixel</b><small>City Guide</small></span>
-    <span class="guide__step" id="guide-step">1 / 8</span>
-    <button type="button" class="guide__x" id="guide-x" aria-label="Minimise the guide">×</button>
-  </div>
-  <p class="guide__text" id="guide-text"></p>
-  <button type="button" class="guide__quest" id="guide-quest" hidden></button>
-  <div class="guide__actions">
-    <button type="button" class="gbtn" id="guide-later">Not now</button>
-    <button type="button" class="gbtn gbtn--go" id="guide-go">On it!</button>
-  </div>
-</aside>
-<button type="button" class="guide-chip" id="guide-chip" hidden><span class="guide-chip__face" aria-hidden="true"></span><span><b>Pixel · <span id="chip-step"></span></b><span id="chip-text"></span></span></button>
-
-<div class="toast" id="toast" role="status" hidden></div>
-
-<!-- Content cards, opened from objects inside the buildings. -->
-<div class="card-wrap" id="card-wrap" hidden>
-  <article class="card" id="card" role="dialog" aria-modal="false" aria-labelledby="card-title">
-    <button type="button" class="card__x" id="card-x" aria-label="Close">×</button>
-    <p class="card__kicker" id="card-kicker"></p>
-    <h2 class="card__title" id="card-title"></h2>
-    <div class="card__body" id="card-body"></div>
-  </article>
-</div>
-
-<noscript><p class="noscript">This site is a small 3D city and needs JavaScript. Harsh Raj · <a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a> · <a href="https://github.com/harshrajdebug">GitHub</a></p></noscript>
-
-<script type="module" src="city.js?v=17"></script>
+<noscript><p class="noscript">Harsh Raj -- harshrajdebug@gmail.com -- github.com/harshrajdebug</p></noscript>
+<script src="term.js?v=1"></script>
 </body>
 </html>
