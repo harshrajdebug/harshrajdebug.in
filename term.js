@@ -159,7 +159,7 @@ const COMMANDS = {
 <span class="mute">↑↓ outside the prompt switches modules -- Esc leaves a finding</span>`),
   ls: () => print(FILES.map((f) => `<span class="hl">${esc(f.file)}</span>`).join("  ")),
   whoami: () => print("Harsh Raj -- I test whether systems do what they report."),
-  contact: () => print(`<a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a> -- <a href="https://linkedin.com/in/harshraj2789" target="_blank" rel="noopener">linkedin.com/in/harshraj2789</a>`),
+  contact: () => print(`<a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a> -- <a href="https://www.linkedin.com/in/harsh2789" target="_blank" rel="noopener">linkedin.com/in/harsh2789</a>`),
   github: () => { print(`<a href="https://github.com/harshrajdebug" target="_blank" rel="noopener">github.com/harshrajdebug ↗</a>`); },
   merged: () => print(FILES.filter((f) => f.state === "merged").map((f) => `<span class="hl">${esc(f.pr)}</span>  ${esc(f.title)}`).join("\n") || "none yet"),
   clear: () => { out.innerHTML = ""; },
