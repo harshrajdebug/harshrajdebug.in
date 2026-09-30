@@ -236,11 +236,15 @@ let bootTimer = null;
 function finishBoot() {
   if (!root.classList.contains("booting")) return;
   clearTimeout(bootTimer); root.classList.remove("booting");
+  // Remembered across visits, so the boot log plays once per browser, not once per tab.
+  try { localStorage.setItem("hr-booted", "1"); } catch (e) { /* ignore */ }
   try { sessionStorage.setItem("hr-booted", "1"); } catch (e) { /* ignore */ }
   route();
 }
 function boot() {
-  let seen = false; try { seen = sessionStorage.getItem("hr-booted") === "1"; } catch (e) { /* ignore */ }
+  let seen = false;
+  try { seen = localStorage.getItem("hr-booted") === "1"; } catch (e) { /* ignore */ }
+  try { seen = seen || sessionStorage.getItem("hr-booted") === "1"; } catch (e) { /* ignore */ }
   if (seen || reduced || location.hash) { route(); return; }
   root.classList.add("booting");
   const pre = $("#boot"); let i = 0;
