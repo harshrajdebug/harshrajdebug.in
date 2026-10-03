@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HARSH_RAJ // SYS.PORTFOLIO</title>
-<meta name="description" content="Harsh Raj tests whether systems do what they report. Nine findings in CNCF projects, each one a status that said one thing while the system did another.">
+<meta name="description" content="Harsh Raj tests whether systems do what they report. Fifteen findings in CNCF projects, each one a status that said one thing while the system did another.">
 <meta name="theme-color" content="#0f1210">
 <meta property="og:title" content="HARSH_RAJ // SYS.PORTFOLIO">
-<meta property="og:description" content="Nine findings in CNCF projects, each one a status that said one thing while the system did another.">
+<meta property="og:description" content="Fifteen findings in CNCF projects, each one a status that said one thing while the system did another.">
 <meta property="og:url" content="https://harshrajdebug.in/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://harshrajdebug.in/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Harsh Raj -- 2 merged, 11 in review">
+<meta property="og:image:alt" content="Harsh Raj -- 4 merged, 13 in review">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://harshrajdebug.in/og.png">
 <link rel="canonical" href="https://harshrajdebug.in/">
@@ -36,7 +36,7 @@
     </dl>
     <dl class="sys__col sys__col--r">
       <div><dt>STATUS</dt><dd class="ok">200</dd></div>
-      <div><dt>CLAIMS</dt><dd><span id="sys-claims">9</span> CHECKED</dd></div>
+      <div><dt>CLAIMS</dt><dd><span id="sys-claims">15</span> CHECKED</dd></div>
       <div><dt>LOCAL</dt><dd id="sys-clock">IST</dd></div>
     </dl>
   </header>
@@ -65,8 +65,8 @@
       <dl class="kv">
         <div><dt>LOCATION</dt><dd>Dehradun, India -- IST, UTC+05:30</dd></div>
         <div><dt>FOCUS</dt><dd>Kubernetes controllers -- admission webhooks -- status that lies -- supply chain</dd></div>
-        <div><dt>MERGED</dt><dd class="ok">Kyverno -- KEDA</dd></div>
-        <div><dt>ACTIVE_IN</dt><dd>PipeCD -- kgateway -- OpenKruise -- KubeEdge -- Volcano</dd></div>
+        <div><dt>MERGED</dt><dd class="ok">Kyverno -- KEDA -- PipeCD</dd></div>
+        <div><dt>ACTIVE_IN</dt><dd>Volcano -- Kubeflow -- PipeCD -- kgateway -- OpenKruise -- KubeEdge</dd></div>
         <div><dt>CONTACT</dt><dd><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a></dd></div>
         <div><dt>OPEN_TO_WORK</dt><dd class="ok">TRUE -- internships</dd></div>
       </dl>
@@ -74,10 +74,11 @@
       <p class="cmd"><span class="ps">$</span> cat record.txt</p>
       <dl class="kv kv--wide">
         <div><dt>KYVERNO</dt><dd><span class="rt rt--merged">MERGED</span> a policy check that passed while checking nothing <a class="pr" href="https://github.com/kyverno/kyverno/pull/17608" target="_blank" rel="noopener">#17608</a></dd></div>
-        <div><dt>KEDA</dt><dd><span class="rt rt--merged">MERGED</span> a connection pool that never let go <a class="pr" href="https://github.com/kedacore/keda/pull/8193" target="_blank" rel="noopener">#8193</a></dd></div>
+        <div><dt>KEDA</dt><dd><span class="rt rt--merged">MERGED</span> a connection pool that never let go <a class="pr" href="https://github.com/kedacore/keda/pull/8193" target="_blank" rel="noopener">#8193</a> <a class="pr" href="https://github.com/kedacore/keda/pull/8213" target="_blank" rel="noopener">#8213</a></dd></div>
+        <div><dt>PIPECD</dt><dd><span class="rt rt--merged">MERGED</span> a rollback reported as synced while still running the old revision <a class="pr" href="https://github.com/pipe-cd/pipecd/pull/7412" target="_blank" rel="noopener">#7412</a></dd></div>
         <div><dt>OPENKRUISE</dt><dd><span class="rt rt--review">REVIEW</span> of another author's PR, acted on: two credential leaks in the proxy logs <a class="pr" href="https://github.com/openkruise/agents/pull/958" target="_blank" rel="noopener">#958</a></dd></div>
         <div><dt>PIPECD</dt><dd><span class="rt rt--review">REVIEW</span> of another author's PR, acted on: the cancel test was watching the wrong process <a class="pr" href="https://github.com/pipe-cd/pipecd/pull/7320" target="_blank" rel="noopener">#7320</a></dd></div>
-        <div><dt>IN_REVIEW</dt><dd><span class="rt">OPEN</span> eleven more pull requests -- see <a href="#work" data-go="work">02._WORK</a></dd></div>
+        <div><dt>IN_REVIEW</dt><dd><span class="rt">OPEN</span> thirteen more pull requests -- see <a href="#work" data-go="work">02._WORK</a></dd></div>
       </dl>
 
       <p class="tip">TIP: <kbd>↑</kbd><kbd>↓</kbd> to navigate -- type <b>help</b> for commands</p>
@@ -85,7 +86,7 @@
 
     <section class="page" id="page-work" data-page="work" aria-labelledby="h-work">
       <p class="cmd"><span class="ps">$</span> <span id="h-work">ls -la /findings/</span></p>
-      <p class="dim">9 entries -- click a filename to expand -- click [OPEN] to read the case -- state is live from GitHub</p>
+      <p class="dim">15 entries -- click a filename to expand -- click [OPEN] to read the case -- state is live from GitHub</p>
       <div class="table" role="table" aria-label="Findings">
         <div class="row row--hdr" role="row"><span role="columnheader">NAME</span><span role="columnheader">PROJECT</span><span role="columnheader">STATE</span><span role="columnheader">CLAIMED</span><span role="columnheader">DESCRIPTION</span></div>
         <div id="files" role="rowgroup"></div>
@@ -105,7 +106,7 @@
         <p>The bug I keep finding is the same one wearing different clothes: a system reports a state it is not in. A policy engine says <b>pass</b> after checking zero resources. A gateway marks a policy <b>Accepted</b> while Envoy rejects the backend. A rollback says <b>Synced</b> while the old revision runs.</p>
         <p>Nobody files these, because nothing looks broken. The dashboard is green. So I read the status, then go and look at what actually happened -- the goroutine count, the Envoy config, the task set tag -- and write down the difference.</p>
         <p>Every fix I send comes with the measurement that shows the gap. A claim I can't reproduce doesn't get posted.</p>
-        <p class="dim">Merged in Kyverno and KEDA, with fixes in review at PipeCD, kgateway, OpenKruise, KubeEdge and Volcano. Looking for internships.</p>
+        <p class="dim">Merged in Kyverno, KEDA and PipeCD, with fixes in review at Volcano, Kubeflow, kgateway, OpenKruise and KubeEdge. Looking for internships.</p>
         <p><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a> -- <a href="https://github.com/harshrajdebug" target="_blank" rel="noopener">github.com/harshrajdebug</a> -- <a href="https://www.linkedin.com/in/harsh2789" target="_blank" rel="noopener">linkedin.com/in/harsh2789</a></p>
       </div>
     </section>
@@ -122,7 +123,7 @@
         <dl class="kv kv--tight"><div><dt>Company</dt><dd>SafePay</dd></div><div><dt>Dates</dt><dd>2025.06 -- 2025.07</dd></div></dl>
         <ul class="dash"><li>Triaged 50+ SIEM alerts by correlating event metadata, assets, severity and indicators of compromise.</li><li>Ran Nmap and OpenVAS assessments that surfaced 15+ exposed services and misconfigurations, and wrote the triage playbooks the team adopted.</li></ul>
         <h2 class="c">// open source</h2>
-        <ul class="dash"><li>Merged: Kyverno #17608 (backported as #17612), KEDA #8193.</li><li>In review: PipeCD #7443, #7440 and #7412, kgateway #14749 and #14760, Kyverno #17620, KEDA #8213, OpenKruise #1001, KubeEdge #7306 and #7307, Volcano #6002.</li><li>Reviews acted on: OpenKruise #958, PipeCD #7320.</li></ul>
+        <ul class="dash"><li>Merged: Kyverno #17608 (backported as #17612), KEDA #8193 and #8213, PipeCD #7412.</li><li>In review: Volcano #6046 and #6002, PipeCD #7443 and #7440, Kyverno #17620, #17831 and #17838, Kubeflow #4155, kgateway #14749 and #14760, OpenKruise #1001, KubeEdge #7306 and #7307.</li><li>Reviews acted on: OpenKruise #958, PipeCD #7320.</li></ul>
         <h2 class="c">// skills</h2>
         <ul class="dash"><li><b>Languages:</b> Go -- Python -- C++ -- Java -- SQL -- Bash -- JavaScript</li><li><b>Cloud native:</b> Kubernetes -- controller-runtime -- admission webhooks -- CRDs -- Helm -- kind -- Envoy -- gRPC -- Prometheus</li><li><b>Security:</b> OAuth 2.0 / OIDC -- PKI -- Sigstore / Cosign -- supply chain -- Nmap -- Burp Suite -- SIEM -- digital forensics</li><li><b>ML:</b> PyTorch -- Transformers -- scikit-learn -- RAG</li><li><b>Testing:</b> Ginkgo / Gomega -- pytest -- Playwright -- root cause analysis</li></ul>
       </div>
@@ -149,6 +150,6 @@
 </div>
 
 <noscript><p class="noscript">Harsh Raj -- harshrajdebug@gmail.com -- github.com/harshrajdebug</p></noscript>
-<script src="term.js?v=3"></script>
+<script src="term.js?v=4"></script>
 </body>
 </html>
