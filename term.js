@@ -13,7 +13,7 @@ const FILES = [
     said: "kyverno apply → clean pass", did: "kinds resolved → 0",
     why: "When the CLI works out which resource kinds to fetch, it reads each policy's match constraints through a chain of type accessors. NamespacedValidatingPolicy and NamespacedImageValidatingPolicy had no branch, so their match constraints stayed nil, no kinds were registered, and no resources were fetched. The policy was then evaluated against an empty set. Nothing errored, so the run read as a clean pass.",
     fix: "Add the two missing branches in extractResourcesFromPolicies, completing the gap an earlier fix closed for the mutating, generating and deleting kinds." },
-  { id: "keda-8193", file: "KEDA_8193.pool", project: "KEDA", pr: "kedacore/keda#8193", state: "merged", claimed: "closed",
+  { id: "keda-8193", file: "KEDA_8193.pool", project: "KEDA", pr: "kedacore/keda#8193", also: ["kedacore/keda#8213"], state: "merged", claimed: "closed",
     title: "A connection pool that never let go.",
     said: "scaler closed", did: "held connections → 5, 10, 15",
     why: "The external scaler's gRPC pool never released an entry. Its cleanup goroutine waited for the connection to reach Shutdown, but a connection only reaches Shutdown when Close() is called, and the only Close() was inside that goroutine. The scaler's own Close() returned nil. Every scaler address ever configured left a connection, a pool entry and a blocked goroutine behind.",
@@ -84,18 +84,21 @@ const FILES = [
     why: "A node cut off from the cloud could not start pods that mount a service account token. The cached token was deleted 49 minutes in, with 11 minutes of validity left, before any replacement existed; offline, none ever arrived. The token lookup also had no fallback.",
     fix: "Carries a community commit that stops the early deletion, plus a fallback to the still-valid cached token when a refresh fails." },
 ];
-FILES.forEach((f, i) => { f.i = i; f.n = String(i + 1).padStart(2, "0"); f.num = f.pr.split("#")[1]; f.url = `https://github.com/${f.pr.replace("#", "/pull/")}`; });
+FILES.forEach((f, i) => { f.i = i; f.n = String(i + 1).padStart(2, "0"); f.num = f.pr.split("#")[1]; f.url = prUrl(f.pr); f.also = f.also || []; });
+function prUrl(pr) { return `https://github.com/${pr.replace("#", "/pull/")}`; }
+function prLinks(f) { return [f.pr, ...f.also].map((pr) => `<a href="${prUrl(pr)}" target="_blank" rel="noopener">${esc(pr)} ↗</a>`).join(" + "); }
+function alsoLinks(f) { return f.also.map((pr) => ` <a class="pr" href="${prUrl(pr)}" target="_blank" rel="noopener">+ #${esc(pr.split("#")[1])}</a>`).join(""); }
 const PAGES = ["home", "work", "about", "resume"];
 
 // ================================================================ work table
 function stateSpan(s) { return `<span class="st st--${esc(s)}">${esc(s)}</span>`; }
 function renderFiles() {
   $("#files").innerHTML = FILES.map((f) => `
-    <div class="row" role="row"><button class="fname" type="button" aria-expanded="false" aria-controls="det-${f.id}" data-file="${f.i}">${esc(f.file)}</button><span>${esc(f.project)}</span>${stateSpan(f.state)}<span class="claimed">"${esc(f.claimed)}" ✓</span><span>${esc(f.title)}</span></div>
+    <div class="row" role="row"><button class="fname" type="button" aria-expanded="false" aria-controls="det-${f.id}" data-file="${f.i}">${esc(f.file)}</button><span>${esc(f.project)}</span>${stateSpan(f.state)}<span class="claimed">"${esc(f.claimed)}" ✓</span><span>${esc(f.title)}${alsoLinks(f)}</span></div>
     <dl class="det" id="det-${f.id}" hidden>
       <dt>SAID</dt><dd class="said">${esc(f.said)}</dd>
       <dt>DID</dt><dd class="did">${esc(f.did)}</dd>
-      <dt>PR</dt><dd><a href="${f.url}" target="_blank" rel="noopener">${esc(f.pr)} ↗</a></dd>
+      <dt>PR</dt><dd>${prLinks(f)}</dd>
       <dd class="open"><span class="ps">$</span>cat ${esc(f.file)} <button class="open-btn" type="button" data-open="${f.i}">[OPEN]</button></dd>
     </dl>`).join("");
 }
@@ -117,7 +120,7 @@ function renderCase(f) {
       <p class="case__n">${f.n} / ${String(FILES.length).padStart(2, "0")}</p>
       <h2 class="case__t">${esc(f.project.toUpperCase())} #${esc(f.num)}</h2>
       <p class="case__s">${esc(f.title)}</p>
-      <dl class="kv kv--tight"><div><dt>PROJECT</dt><dd>${esc(f.project)}</dd></div><div><dt>STATE</dt><dd>${stateSpan(f.state)}</dd></div><div><dt>PR</dt><dd><a href="${f.url}" target="_blank" rel="noopener">${esc(f.pr)} ↗</a></dd></div></dl>
+      <dl class="kv kv--tight"><div><dt>PROJECT</dt><dd>${esc(f.project)}</dd></div><div><dt>STATE</dt><dd>${stateSpan(f.state)}</dd></div><div><dt>PR</dt><dd>${prLinks(f)}</dd></div></dl>
       <pre class="diff"><span class="c"># what the system reported vs what it did</span>
 <span class="m">- ${esc(f.said)}   ✓</span>
 <span class="p">+ ${esc(f.did)}</span></pre>
@@ -191,7 +194,7 @@ const COMMANDS = {
   whoami: () => print("Harsh Raj -- I test whether systems do what they report."),
   contact: () => print(`<a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a> -- <a href="https://www.linkedin.com/in/harsh2789" target="_blank" rel="noopener">linkedin.com/in/harsh2789</a>`),
   github: () => { print(`<a href="https://github.com/harshrajdebug" target="_blank" rel="noopener">github.com/harshrajdebug ↗</a>`); },
-  merged: () => print(FILES.filter((f) => f.state === "merged").map((f) => `<span class="hl">${esc(f.pr)}</span>  ${esc(f.title)}`).join("\n") || "none yet"),
+  merged: () => print(FILES.filter((f) => f.state === "merged").map((f) => `<span class="hl">${[f.pr, ...f.also].map(esc).join(" + ")}</span>  ${esc(f.title)}`).join("\n") || "none yet"),
   clear: () => { out.innerHTML = ""; },
   sudo: () => print("guest is not in the sudoers file. This incident will be reported.", "err"),
 };
