@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -22,10 +22,22 @@
 <section class="stage" aria-label="Intro">
   <div class="window" id="window">
     <div class="titlebar">
-      <span class="chev" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
+<button class="chev" id="menuBtn" type="button" aria-expanded="false" aria-controls="menuPanel" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    </div>
+
+    <div class="menu-panel" id="menuPanel" hidden>
+      <p class="menu-copy">© 2026 HARSH RAJ. All rights reserved.</p>
+      <div class="menu-grid">
+        <a href="#hi" data-menu-pan>Notes</a>
+        <a href="#about" data-menu-close>About</a>
+        <a href="harsh-raj-resume.pdf">Resume</a>
+        <a href="https://www.linkedin.com/in/harsh2789">LinkedIn</a>
+        <a href="https://github.com/harshrajdebug">GitHub</a>
+        <a href="mailto:harshrajdebug@gmail.com">Email</a>
+      </div>
     </div>
 
     <div class="viewport" id="viewport">
@@ -180,6 +192,6 @@
   </nav>
 </footer>
 
-<script src="main.js?v=3"></script>
+<script src="main.js?v=4"></script>
 </body>
 </html>

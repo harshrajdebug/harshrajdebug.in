@@ -152,6 +152,33 @@
     });
   }
 
+  // ---------- title bar menu ----------
+  const menuBtn = document.getElementById("menuBtn");
+  const menuPanel = document.getElementById("menuPanel");
+  function setMenu(open) {
+    menuPanel.hidden = !open;
+    menuBtn.setAttribute("aria-expanded", String(open));
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  }
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setMenu(menuPanel.hidden);
+  });
+  document.addEventListener("click", (e) => {
+    if (!menuPanel.hidden && !menuPanel.contains(e.target)) setMenu(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !menuPanel.hidden) { setMenu(false); menuBtn.focus(); }
+  });
+  menuPanel.querySelector("[data-menu-pan]").addEventListener("click", (e) => {
+    e.preventDefault();
+    setMenu(false);
+    const s = stops[stop % stops.length];
+    stop++;
+    panTo(s.x, s.y);
+  });
+  menuPanel.querySelector("[data-menu-close]").addEventListener("click", () => setMenu(false));
+
   // ---------- start ----------
   function init() {
     measure();
