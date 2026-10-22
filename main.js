@@ -103,6 +103,11 @@
     stop++;
     panTo(s.x, s.y);
   });
+  document.querySelector("[data-top]").addEventListener("click", (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    panTo(HERO.x, HERO.y);
+  });
   document.querySelector(".brand").addEventListener("click", (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });

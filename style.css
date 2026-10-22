@@ -344,6 +344,25 @@ a { color: inherit; }
 .cable.kb { left: 6px; width: clamp(140px, 15vw, 280px); }
 .cable.ms { right: 16px; width: clamp(100px, 10vw, 190px); }
 
+/* ---------- footer bar ---------- */
+.footbar {
+  background: #000;
+  color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 34px;
+  padding-inline: clamp(16px, 5.5vw, 110px);
+  border-top: 1px solid #141414;
+}
+.foot-socials { display: flex; gap: 36px; }
+.foot-socials a { display: grid; place-items: center; color: #f2f2f2; transition: opacity .15s, transform .15s; }
+.foot-links { display: flex; gap: clamp(22px, 3vw, 60px); font: 600 22px/1 var(--sans); }
+.foot-links a { color: #e6e6e6; text-decoration: none; transition: opacity .15s; }
+.foot-socials a:hover, .foot-links a:hover { opacity: .65; }
+.foot-socials a:hover { transform: translateY(-2px); }
+
 /* ---------- smaller screens ---------- */
 @media (max-width: 1100px) {
   .socials { display: none; }
@@ -372,6 +391,10 @@ a { color: inherit; }
   .hero .sub { font-size: 42px; }
   .pill-lg { font-size: 34px; padding: 16px 30px 14px; }
   .about { padding-top: 80px; }
+  .footbar { padding-block: 26px; }
+  .foot-socials { gap: 22px; }
+  .foot-socials svg { width: 24px; height: 24px; }
+  .foot-links { font-size: 17px; gap: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
