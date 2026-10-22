@@ -351,7 +351,8 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  flex-wrap: wrap;
+  gap: 18px 24px;
   padding-block: 34px;
   padding-inline: clamp(16px, 5.5vw, 110px);
   border-top: 1px solid #141414;
@@ -395,6 +396,12 @@ a { color: inherit; }
   .foot-socials { gap: 22px; }
   .foot-socials svg { width: 24px; height: 24px; }
   .foot-links { font-size: 17px; gap: 18px; }
+}
+
+@media (max-width: 400px) {
+  .foot-socials { gap: 16px; }
+  .foot-socials svg { width: 22px; height: 22px; }
+  .foot-links { font-size: 16px; gap: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
