@@ -179,12 +179,98 @@
   });
   menuPanel.querySelector("[data-menu-close]").addEventListener("click", () => setMenu(false));
 
+  // ---------- the resident bug ----------
+  const bug = document.getElementById("bug");
+  const pop = document.getElementById("bugPop");
+  const count = document.getElementById("bugCount");
+  const notes = [...board.querySelectorAll(".note")];
+  let caughtN = 0;
+  try { caughtN = +localStorage.getItem("bugs-caught") || 0; } catch (e) {}
+  function showCount() {
+    if (!caughtN) return;
+    count.textContent = `bugs caught: ${caughtN}`;
+    count.hidden = false;
+  }
+  showCount();
+
+  // the part of the board the visitor can see right now, in board pixels
+  function visibleArea(pad = 70) {
+    const left = -x / scale, top = -y / scale;
+    return { l: left + pad, t: top + pad + 90, r: left + vw / scale - pad, b: top + vh / scale - pad };
+  }
+  const rand = (a, b) => a + Math.random() * (b - a);
+  let bx = 0, by = 0, angle = 0, tx = 0, ty = 0, pauseUntil = 0, bugT = 0, alive = true;
+
+  function pickTarget() {
+    const v = visibleArea();
+    // now and then, go and hide under a note that is in view
+    const inView = notes.filter((n) => n.offsetLeft + n.offsetWidth / 2 > v.l && n.offsetLeft + n.offsetWidth / 2 < v.r &&
+      n.offsetTop + n.offsetHeight / 2 > v.t && n.offsetTop + n.offsetHeight / 2 < v.b);
+    if (inView.length && Math.random() < 0.3) {
+      const n = inView[Math.floor(Math.random() * inView.length)];
+      tx = n.offsetLeft + n.offsetWidth / 2; ty = n.offsetTop + n.offsetHeight / 2;
+    } else {
+      tx = rand(v.l, v.r); ty = rand(v.t, v.b);
+    }
+  }
+  function place() {
+    bug.style.transform = `translate(${bx}px, ${by}px) rotate(${angle}rad)`;
+  }
+  function spawn() {
+    const v = visibleArea(20);
+    const side = Math.floor(Math.random() * 4);
+    bx = side === 0 ? v.l : side === 1 ? v.r : rand(v.l, v.r);
+    by = side === 2 ? v.t : side === 3 ? v.b : rand(v.t, v.b);
+    alive = true;
+    bug.classList.remove("caught");
+    pickTarget();
+    place();
+  }
+  function step(now) {
+    const dt = Math.min(0.05, (now - bugT) / 1000 || 0);
+    bugT = now;
+    if (alive && now > pauseUntil) {
+      const dx = tx - bx, dy = ty - by, d = Math.hypot(dx, dy);
+      if (d < 6) {
+        pauseUntil = now + rand(900, 3200);
+        bug.classList.remove("walking");
+        pickTarget();
+      } else {
+        // turn smoothly toward the target, with a little wobble
+        const want = Math.atan2(dy, dx) + Math.PI / 2 + Math.sin(now / 260) * 0.25;
+        const diff = ((want - angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+        angle += diff * Math.min(1, dt * 5);
+        const heading = angle - Math.PI / 2;
+        bx += Math.cos(heading) * 70 * dt;
+        by += Math.sin(heading) * 70 * dt;
+        bug.classList.add("walking");
+        place();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  bug.addEventListener("click", () => {
+    if (!alive) return;
+    alive = false;
+    bug.classList.remove("walking");
+    bug.classList.add("caught");
+    pop.style.setProperty("--at", `translate(${bx - 30}px, ${by - 40}px)`);
+    pop.classList.remove("show"); void pop.offsetWidth; pop.classList.add("show");
+    caughtN++;
+    try { localStorage.setItem("bugs-caught", String(caughtN)); } catch (e) {}
+    showCount();
+    setTimeout(spawn, 2600);
+  });
+
   // ---------- start ----------
   function init() {
     measure();
     centreOn(HERO.x, HERO.y);
   }
   init();
+  spawn();
+  if (!reduceMotion) requestAnimationFrame(step);
   let resizeTimer = 0;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);

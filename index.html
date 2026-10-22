@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -28,6 +28,7 @@
       <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
     </div>
 
+    <p class="bug-count" id="bugCount" role="status" hidden></p>
     <div class="menu-panel" id="menuPanel" hidden>
       <p class="menu-copy">© 2026 HARSH RAJ. All rights reserved.</p>
       <div class="menu-grid">
@@ -65,6 +66,23 @@
         </svg>
 
         <p class="tip"><b>TIP:</b> Drag the board<br>to look around!</p>
+
+        <!-- the resident bug: placed before the notes so it can hide under them -->
+        <button class="bug" id="bug" type="button" aria-label="A bug. Catch it!">
+          <svg viewBox="0 0 64 64" width="52" height="52" aria-hidden="true">
+            <g class="legs" fill="none" stroke="#1b1b1b" stroke-width="2.4" stroke-linecap="round">
+              <path class="leg l1" d="M22 26 L10 20"/><path class="leg l2" d="M21 34 L8 34"/><path class="leg l3" d="M22 42 L10 49"/>
+              <path class="leg r1" d="M42 26 L54 20"/><path class="leg r2" d="M43 34 L56 34"/><path class="leg r3" d="M42 42 L54 49"/>
+            </g>
+            <path d="M27 13 C 24 7, 20 6, 18 5 M37 13 C 40 7, 44 6, 46 5" fill="none" stroke="#1b1b1b" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="32" cy="17" r="7" fill="#1b1b1b"/>
+            <path d="M32 21 C 18 21, 17 33, 18 40 C 19 51, 27 57, 32 57 C 37 57, 45 51, 46 40 C 47 33, 46 21, 32 21 Z" fill="#e3392b" stroke="#1b1b1b" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M32 22 L32 56" stroke="#1b1b1b" stroke-width="2"/>
+            <circle cx="25" cy="33" r="3" fill="#1b1b1b"/><circle cx="39" cy="31" r="2.6" fill="#1b1b1b"/>
+            <circle cx="26" cy="45" r="2.6" fill="#1b1b1b"/><circle cx="38" cy="45" r="3" fill="#1b1b1b"/>
+          </svg>
+        </button>
+        <span class="bug-pop" id="bugPop" aria-hidden="true">fixed ✓</span>
 
         <!-- notes scattered around the board -->
         <article class="note n-do" style="--tilt:-2.5deg">
@@ -192,6 +210,6 @@
   </nav>
 </footer>
 
-<script src="main.js?v=4"></script>
+<script src="main.js?v=5"></script>
 </body>
 </html>

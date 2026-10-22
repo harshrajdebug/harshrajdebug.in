@@ -185,11 +185,11 @@ a { color: inherit; }
 .doodle path { fill: none; stroke: var(--line); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 .arrow { position: absolute; pointer-events: none; }
 .a-left  { left: 330px;  top: 690px;  width: 380px; }
-.a-right { left: 1420px; top: 700px;  width: 340px; }
+.a-right { left: 1500px; top: 840px;  width: 300px; }
 
 .tip {
   position: absolute;
-  left: 1250px; top: 960px;
+  left: 1440px; top: 735px;
   margin: 0;
   font-family: var(--hand);
   font-size: 30px;
@@ -235,6 +235,56 @@ a { color: inherit; }
 .n-now { left: 1440px; top: 120px; }
 .n-hi  { left: 1640px; top: 990px; }
 .note p { margin: 0; font-size: 22px; line-height: 1.35; }
+
+/* the resident bug */
+.bug {
+  position: absolute;
+  left: 0; top: 0;
+  width: 52px; height: 52px;
+  margin: -26px 0 0 -26px;
+  padding: 0; border: 0; background: none;
+  cursor: pointer;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+.bug svg { display: block; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .18)); }
+.bug .leg { transform-box: fill-box; }
+.bug .l1, .bug .l3, .bug .r2 { transform-origin: 100% 50%; }
+.bug .r1, .bug .r3, .bug .l2 { transform-origin: 0 50%; }
+.bug.walking .l1, .bug.walking .l3, .bug.walking .r2 { animation: legA .22s ease-in-out infinite alternate; }
+.bug.walking .r1, .bug.walking .r3, .bug.walking .l2 { animation: legB .22s ease-in-out infinite alternate; }
+@keyframes legA { from { transform: rotate(-14deg); } to { transform: rotate(12deg); } }
+@keyframes legB { from { transform: rotate(12deg); } to { transform: rotate(-14deg); } }
+.bug.caught { pointer-events: none; animation: caught .45s ease-in forwards; }
+@keyframes caught { to { opacity: 0; filter: blur(1px); } }
+.bug:focus-visible { outline: 3px solid #1d9bf0; outline-offset: 4px; border-radius: 50%; }
+.bug-pop {
+  position: absolute; left: 0; top: 0;
+  font: 400 26px var(--hand);
+  color: #148a3b;
+  pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+}
+.bug-pop.show { animation: pop 1.2s ease-out forwards; }
+@keyframes pop {
+  0% { opacity: 0; transform: var(--at) translateY(0) rotate(-6deg); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: var(--at) translateY(-46px) rotate(-6deg); }
+}
+.bug-count {
+  position: absolute;
+  right: 20px; bottom: 18px;
+  z-index: 4;
+  margin: 0;
+  padding: 6px 14px 4px;
+  font: 400 21px/1 var(--hand);
+  color: #fff;
+  background: #1b1b1b;
+  border-radius: 10px;
+  transform: rotate(2deg);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .2);
+}
 
 /* the other cursor */
 .cursor {
@@ -453,6 +503,7 @@ a { color: inherit; }
   .t-python, .t-git, .t-github { display: none; }
   .dock-label { font-size: 17px; padding: 5px 12px 3px; left: 10px; }
   .cable { display: none; }
+  .tip { left: 900px; top: 985px; }
   .hero { width: 760px; }
   .hero h1 { font-size: 80px; }
   .hero .sub { font-size: 42px; }
