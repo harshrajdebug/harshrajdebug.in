@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>harshrajdebug.in</title>
+  <rect width="64" height="64" rx="14" fill="#0f1210"/>
+  <!-- the claim: a pass tick -->
+  <path d="M12.5 37 25.5 49.5 53 19.5" fill="none" stroke="#4ade80" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- what the system actually did: the claim, struck through -->
+  <path d="M8 30 56 22" fill="none" stroke="#0f1210" stroke-width="9" stroke-linecap="round"/>
+  <path d="M8 30 56 22" fill="none" stroke="#f87171" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- the cursor, still checking -->
+  <rect x="42" y="50" width="13" height="5" rx="1.2" fill="#d4d8d0"/>
+</svg>

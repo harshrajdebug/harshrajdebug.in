@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Logo options</title>
+<style>
+  body { margin: 0; padding: 32px 20px; background: #0f1210; color: #d4d8d0; font: 14px/1.6 "Geist Mono", ui-monospace, monospace; }
+  h1 { font-size: 15px; font-weight: 500; margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; max-width: 1100px; }
+  .card { border: 1px solid #1f2520; padding: 18px; }
+  .card h2 { margin: 0 0 4px; font-size: 14px; font-weight: 500; color: #4ade80; }
+  .card p { margin: 0 0 14px; color: #8b9187; font-size: 12px; }
+  .sizes { display: flex; align-items: flex-end; gap: 16px; }
+  .light { background: #e9ece6; padding: 8px; display: flex; gap: 10px; align-items: flex-end; }
+  .tab { display: inline-flex; align-items: center; gap: 6px; background: #1f2520; padding: 5px 10px; border-radius: 6px 6px 0 0; font-size: 11px; margin-top: 12px; }
+</style>
+<h1>Pick one (A–D), or mix parts of them</h1>
+<div class="grid" id="g"></div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- A: breakpoint H. Two gutters, a crossbar, and the red breakpoint dot where execution stops -->
+    <symbol id="A" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#0f1210"/>
+      <rect x="13" y="12" width="9" height="40" rx="2.5" fill="#d4d8d0"/>
+      <rect x="42" y="12" width="9" height="40" rx="2.5" fill="#d4d8d0"/>
+      <path d="M21 32H43" stroke="#4ade80" stroke-width="6"/>
+      <circle cx="32" cy="32" r="6.5" fill="#f87171" stroke="#0f1210" stroke-width="2.5"/>
+    </symbol>
+    <!-- B: hr_ monogram. Lowercase h and r, with the prompt cursor after them -->
+    <symbol id="B" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#0f1210"/>
+      <path d="M14 11V47M14 35C14 28 18 25 23.5 25S33 28 33 35V47M41 47V26M41 33C41 28 45 25 51 25" fill="none" stroke="#d4d8d0" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="47" y="49" width="12" height="5" rx="1.2" fill="#4ade80"/>
+    </symbol>
+    <!-- C: diff gutter. What was claimed (red, minus) over what was verified (green, plus) -->
+    <symbol id="C" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#0f1210"/>
+      <rect x="6" y="13" width="52" height="16" rx="3" fill="#f87171" fill-opacity=".14"/>
+      <rect x="6" y="35" width="52" height="16" rx="3" fill="#4ade80" fill-opacity=".14"/>
+      <rect x="11" y="19" width="11" height="4" rx="1" fill="#f87171"/>
+      <rect x="27" y="18.5" width="25" height="5" rx="1.5" fill="#f87171" fill-opacity=".55"/>
+      <rect x="11" y="41" width="11" height="4" rx="1" fill="#4ade80"/>
+      <rect x="14.5" y="37.5" width="4" height="11" rx="1" fill="#4ade80"/>
+      <rect x="27" y="40.5" width="25" height="5" rx="1.5" fill="#4ade80"/>
+    </symbol>
+    <!-- D: step over. The debugger's step-over arc, jumping past a breakpoint -->
+    <symbol id="D" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="14" fill="#0f1210"/>
+      <path d="M13 42C13 17 51 17 51 40" fill="none" stroke="#4ade80" stroke-width="6.5" stroke-linecap="round"/>
+      <path d="M43 34L51 42 59 34" fill="none" stroke="#4ade80" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="32" cy="46" r="6.5" fill="#f87171"/>
+      <rect x="10" y="53" width="44" height="3" rx="1.5" fill="#5a6058"/>
+    </symbol>
+  </defs>
+</svg>
+<script>
+  const info = {
+    A: ["Breakpoint H", "An H where the crossbar has a debugger breakpoint in it. Reads as H, and as “stop here and look”."],
+    B: ["hr_ monogram", "Your initials as lowercase glyphs, with the green prompt cursor after them. The most personal of the four."],
+    C: ["Diff gutter", "A red − line over a green + line: what was claimed, then what actually happened. Same idea as the site's case pages."],
+    D: ["Step over", "The debugger's step-over arc jumping past a red breakpoint. Motion instead of letters."],
+  };
+  const use = (id, s) => `<svg width="${s}" height="${s}"><use href="#${id}"/></svg>`;
+  document.getElementById("g").innerHTML = Object.entries(info).map(([id, [t, d]]) => `
+    <div class="card">
+      <h2>${id}. ${t}</h2><p>${d}</p>
+      <div class="sizes">${use(id, 128)}${use(id, 48)}${use(id, 32)}${use(id, 16)}</div>
+      <div class="light">${use(id, 32)}${use(id, 16)}</div>
+      <div class="tab">${use(id, 16)} harshrajdebug.in</div>
+    </div>`).join("");
+</script>
