@@ -22,28 +22,28 @@
     <h2>Current</h2>
 
     <p>
-      <a href="https://github.com/kyverno/kyverno/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">Kyverno</a> - Six merged fixes, including a policy that could crash the admission webhook.
+      <a href="https://github.com/kyverno/kyverno/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">Kyverno</a> - Six merged fixes to the Kubernetes policy engine.
     </p>
 
     <p>
-      <a href="https://github.com/pipe-cd/pipecd/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">PipeCD</a> - Five merged fixes for rollbacks, Terraform stages and multi-cluster deploys.
+      <a href="https://github.com/pipe-cd/pipecd/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">PipeCD</a> - Five merged fixes to a continuous delivery platform, including rollbacks that reported success while the old revision kept running, and Terraform stages that left the state locked.
     </p>
 
     <p>
-      <a href="https://github.com/kedacore/keda/pull/8193">KEDA</a> - Fixed a gRPC connection leak in the external scaler.
+      <a href="https://github.com/kedacore/keda/pull/8193">KEDA</a> - Fixed a gRPC connection leak in the event-driven autoscaler, merged with tests.
     </p>
 
     <p>
-      <a href="https://github.com/volcano-sh/volcano/pull/6057">Volcano</a> - Fixed a config typo that crash-looped the whole controller manager.
+      <a href="https://github.com/volcano-sh/volcano/pull/6057">Volcano</a> - Fixed a crash loop in the batch scheduler, set off by one typo in the <a href="https://github.com/volcano-sh/volcano/issues/6049">HyperNode discovery config</a>: the Job, Queue and PodGroup controllers all went down with it.
     </p>
 
     <p>
-      <a href="https://github.com/kgateway-dev/kgateway/pull/14760">kgateway</a> - Fixed TLS verification for backends with SPIFFE, IP or email identities.
+      <a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard</a> - an admission webhook that only lets in pods whose images are signed
       <br><small>(17 fixes merged upstream, 21 more in review)</small>
     </p>
 
     <p>
-      <a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard</a> - An admission webhook that only lets in pods whose images are signed.
+      <a href="https://github.com/kgateway-dev/kgateway/pull/14760">kgateway</a> - Made TLS verification work for backends that are <em>not</em> identified by a DNS name. (merged)
     </p>
 
     <h2>Contact</h2>
@@ -81,6 +81,13 @@
       </g-col>
       <g-col>
         <a href="harsh-raj-resume.pdf">PDF</a>
+      </g-col>
+    </g-row>
+
+    <g-row>
+      <g-col>
+        <br><br>
+        <center><a href="me.jpg"><img src="me.jpg" style="width: 100px"></a></center>
       </g-col>
     </g-row>
   </body>
