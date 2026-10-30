@@ -2,214 +2,96 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Harsh Raj</title>
-<meta name="description" content="Harsh Raj checks whether systems do what they report, mostly Kubernetes and CNCF open source.">
+<meta name="description" content="Harsh Raj works on Kubernetes control planes: controllers, schedulers, admission and policy engines, and fixes them upstream.">
 <link rel="canonical" href="https://harshrajdebug.in/">
 <meta property="og:title" content="Harsh Raj">
-<meta property="og:description" content="I check whether systems do what they report, mostly Kubernetes and CNCF open source.">
+<meta property="og:description" content="Kubernetes control planes, policy engines, upstream fixes.">
 <meta property="og:url" content="https://harshrajdebug.in/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2324292f'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --ink: #24292f;
+    --muted: #57606a;
+    --link: #0969da;
+    --rule: #d8dee4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d1117; --ink: #e6edf3; --muted: #8d96a0; --link: #4493f8; --rule: #30363d; }
+  }
+  html { background: var(--bg); }
+  body {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.25rem 4rem;
+    font: 1.25rem/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+  }
+  h1 { font-size: 3rem; line-height: 1.15; margin: 0 0 1.25rem; letter-spacing: -0.01em; }
+  h2 {
+    font-size: 2rem; line-height: 1.25; margin: 2.75rem 0 1.25rem;
+    padding-bottom: 0.4rem; border-bottom: 1px solid var(--rule);
+  }
+  p { margin: 0 0 1.1rem; }
+  .tagline { font-weight: 700; margin-bottom: 2rem; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  small { font-size: 0.8rem; color: var(--muted); }
+  code { font: 0.85em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  @media (max-width: 480px) {
+    body { font-size: 1.1rem; padding-top: 2.25rem; }
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 1.6rem; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ============ 1. THE BOARD ============ -->
-<section class="stage" aria-label="Intro">
-  <div class="window" id="window">
-    <div class="titlebar">
-<button class="chev" id="menuBtn" type="button" aria-expanded="false" aria-controls="menuPanel" aria-label="Open menu">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
-    </div>
+<h1>Harsh Raj</h1>
+<p class="tagline">Kubernetes Control Planes, Policy Engines, Upstream Fixes</p>
 
-    <p class="bug-count" id="bugCount" role="status" hidden></p>
-    <div class="menu-panel" id="menuPanel" hidden>
-      <p class="menu-copy">© 2026 HARSH RAJ. All rights reserved.</p>
-      <div class="menu-grid">
-        <a href="#hi" data-menu-pan>Notes</a>
-        <a href="#about" data-menu-close>About</a>
-        <a href="harsh-raj-resume.pdf">Resume</a>
-        <a href="https://www.linkedin.com/in/harsh2789">LinkedIn</a>
-        <a href="https://github.com/harshrajdebug">GitHub</a>
-        <a href="mailto:harshrajdebug@gmail.com">Email</a>
-      </div>
-    </div>
+<p>I work on the parts of Kubernetes that decide what runs: controllers, schedulers, admission and policy engines. I go after the failure modes that only show up once a cluster is actually running, reproduce them, and fix them upstream.</p>
 
-    <div class="viewport" id="viewport">
-      <div class="board" id="board">
+<h2>Upstream</h2>
 
-        <!-- hero, centred in the board -->
-        <div class="hero" id="hero">
-          <h1>
-            <span class="line">Hey there! <span class="wave" aria-hidden="true">👋</span></span>
-            <span class="line">I check that systems</span>
-            <span class="line">do what they say</span>
-          </h1>
-          <p class="sub">Mostly Kubernetes, mostly CNCF projects. When something says it passed, I check what it checked.</p>
-          <a class="pill pill-lg" href="mailto:harshrajdebug@gmail.com">Get in touch!</a>
-        </div>
+<p><a href="https://github.com/kyverno/kyverno/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">Kyverno</a> - 6 merged. One MutatingPolicy could <a href="https://github.com/kyverno/kyverno/pull/17620">panic the admission webhook</a>, and the CLI <a href="https://github.com/kyverno/kyverno/pull/17608">passed namespaced policies it never evaluated</a>.</p>
 
-        <!-- arrows from the hero toward the notes -->
-        <svg class="doodle arrow a-left" viewBox="0 0 420 300" aria-hidden="true">
-          <path d="M410 10 C 260 40, 90 120, 30 270"/>
-          <path d="M18 228 L 30 272 L 70 250"/>
-        </svg>
-        <svg class="doodle arrow a-right" viewBox="0 0 400 360" aria-hidden="true">
-          <path d="M10 10 C 80 150, 220 280, 380 330"/>
-          <path d="M338 300 L 382 332 L 340 352"/>
-        </svg>
+<p><a href="https://github.com/pipe-cd/pipecd/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">PipeCD</a> - 5 merged. ECS rollbacks that <a href="https://github.com/pipe-cd/pipecd/pull/7412">reported Synced on the old revision</a>, cancelled Terraform stages that <a href="https://github.com/pipe-cd/pipecd/pull/7440">left the state lock held</a>, plus drift detection, Helm and multi-cluster fixes.</p>
 
-        <p class="tip"><b>TIP:</b> Drag the board<br>to look around!</p>
+<p><a href="https://github.com/kedacore/keda/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">KEDA</a> - 2 merged. The external scaler <a href="https://github.com/kedacore/keda/pull/8193">leaked pooled gRPC connections</a>.</p>
 
-        <!-- the resident bug: placed before the notes so it can hide under them -->
-        <button class="bug" id="bug" type="button" aria-label="A bug. Catch it!">
-          <svg viewBox="0 0 64 64" width="52" height="52" aria-hidden="true">
-            <g class="legs" fill="none" stroke="#1b1b1b" stroke-width="2.4" stroke-linecap="round">
-              <path class="leg l1" d="M22 26 L10 20"/><path class="leg l2" d="M21 34 L8 34"/><path class="leg l3" d="M22 42 L10 49"/>
-              <path class="leg r1" d="M42 26 L54 20"/><path class="leg r2" d="M43 34 L56 34"/><path class="leg r3" d="M42 42 L54 49"/>
-            </g>
-            <path d="M27 13 C 24 7, 20 6, 18 5 M37 13 C 40 7, 44 6, 46 5" fill="none" stroke="#1b1b1b" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="32" cy="17" r="7" fill="#1b1b1b"/>
-            <path d="M32 21 C 18 21, 17 33, 18 40 C 19 51, 27 57, 32 57 C 37 57, 45 51, 46 40 C 47 33, 46 21, 32 21 Z" fill="#e3392b" stroke="#1b1b1b" stroke-width="2.4" stroke-linejoin="round"/>
-            <path d="M32 22 L32 56" stroke="#1b1b1b" stroke-width="2"/>
-            <circle cx="25" cy="33" r="3" fill="#1b1b1b"/><circle cx="39" cy="31" r="2.6" fill="#1b1b1b"/>
-            <circle cx="26" cy="45" r="2.6" fill="#1b1b1b"/><circle cx="38" cy="45" r="3" fill="#1b1b1b"/>
-          </svg>
-        </button>
-        <span class="bug-pop" id="bugPop" aria-hidden="true">fixed ✓</span>
+<p><a href="https://github.com/volcano-sh/volcano/pulls?q=is%3Apr+author%3Aharshrajdebug">Volcano</a> - 1 merged, 5 in review. One config typo <a href="https://github.com/volcano-sh/volcano/pull/6057">crash-looped the controller manager</a>.</p>
 
-        <!-- notes scattered around the board -->
-        <article class="note n-do" style="--tilt:-2.5deg">
-          <span class="tape"></span>
-          <h2>What I do</h2>
-          <p>I read what a system reports, then go and check what actually happened. Mostly Kubernetes and CNCF open source: controllers, admission webhooks, CI/CD.</p>
-        </article>
+<p><a href="https://github.com/kubeflow/trainer/pulls?q=is%3Apr+author%3Aharshrajdebug">Kubeflow Trainer</a> - 1 merged. Jobs with invalid names were <a href="https://github.com/kubeflow/trainer/pull/4155">accepted but could never run</a>.</p>
 
-        <article class="note n-now yellow" style="--tilt:2deg">
-          <span class="tape"></span>
-          <h2>About me</h2>
-          <p>Final-year B.Tech in Computer Science (Cybersecurity &amp; Forensics) at UPES Dehradun. Open to internships.</p>
-        </article>
+<p><a href="https://github.com/kgateway-dev/kgateway/pulls?q=is%3Apr+author%3Aharshrajdebug">kgateway</a> - 1 merged. SPIFFE, IP and email SANs were <a href="https://github.com/kgateway-dev/kgateway/pull/14760">matched as DNS names</a>, so every connection got a 503.</p>
 
-        <article class="note n-hi blue" style="--tilt:-1.5deg">
-          <span class="tape"></span>
-          <h2>Say hi</h2>
-          <ul class="plain">
-            <li><a href="mailto:harshrajdebug@gmail.com">harshrajdebug@gmail.com</a></li>
-            <li><a href="https://github.com/harshrajdebug">github.com/harshrajdebug</a></li>
-            <li><a href="https://www.linkedin.com/in/harsh2789">linkedin.com/in/harsh2789</a></li>
-          </ul>
-        </article>
+<p><a href="https://github.com/prowler-cloud/prowler/pulls?q=is%3Apr+author%3Aharshrajdebug">Prowler</a> - 1 merged. A security group open to the whole internet, split as <code>0.0.0.0/1</code> + <code>128.0.0.0/1</code>, <a href="https://github.com/prowler-cloud/prowler/pull/13191">went unflagged</a>.</p>
 
-        <!-- the "other person" cursor -->
-        <div class="cursor" id="cursor" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="40" height="40"><path d="M5 3 L27 15 L16 17 L11 28 Z" fill="#dff1ff" stroke="#1d9bf0" stroke-width="2.4" stroke-linejoin="round"/></svg>
-          <span>Harsh</span>
-        </div>
-      </div>
+<p><small>17 merged across 7 projects, 21 more in review. <a href="https://github.com/search?q=author%3Aharshrajdebug+is%3Apr+is%3Amerged&amp;type=pullrequests">See them all</a>.</small></p>
 
-      <!-- floating nav stays put while the board moves -->
-      <nav class="navpill" aria-label="Main">
-        <a class="brand" href="#top" aria-label="Harsh Raj, home">
-          <span class="logo" aria-hidden="true"><i></i><i></i></span>
-          <span class="name">Harsh Raj</span>
-        </a>
-        <span class="socials">
-          <a href="https://github.com/harshrajdebug" aria-label="GitHub">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
-          </a>
-          <a href="https://www.linkedin.com/in/harsh2789" aria-label="LinkedIn">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm7 0h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.94c0-1.18-.02-2.7-1.64-2.7-1.65 0-1.9 1.29-1.9 2.62V21h-4V9.75Z"/></svg>
-          </a>
-          <a href="mailto:harshrajdebug@gmail.com" aria-label="Email">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 5.5h18v13H3z M3 6l9 7 9-7"/></svg>
-          </a>
-        </span>
-        <span class="links">
-          <a href="#hi" data-pan="work" class="active">Notes</a>
-          <a href="#about">About</a>
-          <a href="harsh-raj-resume.pdf">Resume</a>
-        </span>
-        <a class="pill" href="mailto:harshrajdebug@gmail.com">Get in touch!</a>
-      </nav>
-    </div>
-  </div>
+<h2>Built</h2>
 
-  <!-- dock -->
-  <div class="dock" id="dock" aria-label="Tools I use">
-    <span class="dock-label">My tools of choice</span>
-    <span class="tile t-go" data-name="Go"><img src="icons/go.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-kubernetes" data-name="Kubernetes"><img src="icons/kubernetes.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-helm" data-name="Helm"><img src="icons/helm.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-docker" data-name="Docker"><img src="icons/docker.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-python" data-name="Python"><img src="icons/python.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-git" data-name="Git"><img src="icons/git.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-github" data-name="GitHub"><img src="icons/github.svg" alt="" width="52" height="52"></span>
-    <span class="tile t-vscode" data-name="VS Code"><img src="icons/vscode.svg" alt="" width="52" height="52"></span>
-    <span class="sep" aria-hidden="true"></span>
-    <span class="tile t-trash" data-name="Flaky tests">
-      <svg viewBox="0 0 48 56" width="44" height="52" aria-hidden="true"><g fill="none" stroke="#1b1b1b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 C 14 5, 34 5, 42 9 C 40 30, 39 42, 37 51 C 28 54, 18 54, 11 51 C 9 40, 7 26, 6 10 Z"/><path d="M6 10 C 16 15, 32 15, 42 9"/></g></svg>
-    </span>
-  </div>
-</section>
+<p><a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard</a> - An admission webhook that only lets a pod in when its images are signed by a signer you trust.</p>
 
-<!-- ============ 2. ABOUT ============ -->
-<section class="about" id="about">
-  <svg class="doodle cable kb" viewBox="0 0 300 560" aria-hidden="true">
-    <path d="M40 0 C 20 120, 10 180, 70 260 C 120 330, 60 380, 80 430 C 90 455, 110 450, 128 438"/>
-    <g class="keyboard" transform="translate(120 400) rotate(4)">
-      <path d="M2 4 L170 10 L168 112 L0 106 Z"/>
-      <path d="M14 26 L156 30 M12 48 L156 52 M12 70 L156 74 M14 92 L60 93 M110 94 L156 95"/>
-      <path d="M36 18 L34 100 M60 19 L58 70 M84 20 L82 72 M108 21 L106 72 M132 22 L130 96"/>
-      <path d="M60 86 L110 88 L110 100 L60 98 Z"/>
-    </g>
-  </svg>
-  <svg class="doodle cable ms" viewBox="0 0 200 560" aria-hidden="true">
-    <path d="M60 0 C 40 140, 80 220, 120 300 C 150 360, 120 400, 132 440"/>
-    <g class="mouse" transform="translate(100 440) rotate(-6)">
-      <path d="M20 4 C 50 0, 66 20, 64 60 C 62 92, 50 110, 30 108 C 8 106, 0 86, 2 56 C 4 22, 8 6, 20 4 Z"/>
-      <path d="M4 40 C 24 44, 44 44, 64 40 M34 4 L34 42"/>
-      <path d="M31 16 L33 30"/>
-    </g>
-  </svg>
+<p><a href="https://github.com/harshrajdebug/aws-misconfig-scanner">aws-misconfig-scanner</a> - A read-only AWS scanner with 32 checks mapped to CIS and Security Hub, tested against a live account.</p>
 
-  <div class="about-inner">
-    <h2 class="gradient">Nice to meet you, I’m Harsh</h2>
+<p><a href="https://github.com/harshrajdebug/phishnet">PhishNet</a> - A cross-modal attention model for explainable, real-time phishing detection.</p>
 
-    <p>I’m a Computer Science student in Dehradun, India, and I spend most of my time inside Kubernetes and the open-source projects built around it. Almost everything I do starts with one question: when a system says something worked, did it actually?</p>
+<h2>Lately</h2>
 
-    <p>Over the last few months that question has turned into fixes in Kyverno, PipeCD, KEDA and Volcano, plus a lot of reading and reviewing other people’s pull requests. The bug I keep running into is the same one wearing different clothes: the dashboard is green, the status says Synced, and something underneath is broken. Before open source, I interned at IBM, where I built a multilingual disaster-response assistant, and at SafePay, where I triaged security alerts and ran vulnerability scans. The maintainers I work with are spread across time zones, so most of it happens in writing, which is why I attach the proof to everything I say.</p>
+<p>The gap between what a control plane accepts and what it can actually run, and the places where a tool's offline answer disagrees with the cluster's.</p>
 
-    <p>I’m also in my final year of a B.Tech in Computer Science (Cybersecurity and Forensics) at UPES Dehradun. Forensics is really just figuring out what happened from what was left behind, and that’s how I approach software too: read what it says, then go look at the logs, the config and the live state, and write down where they don’t match. If I can’t reproduce something, I don’t post it.</p>
+<h2>Contact</h2>
 
-  </div>
-</section>
+<p class="contact">Email harshrajdebug (at) gmail.com · GitHub <a href="https://github.com/harshrajdebug">@harshrajdebug</a> · LinkedIn <a href="https://www.linkedin.com/in/harsh2789">harsh2789</a> · <a href="harsh-raj-resume.pdf">Resume (PDF)</a></p>
 
-<footer class="footbar">
-  <span class="foot-socials">
-    <a href="https://www.linkedin.com/in/harsh2789" aria-label="LinkedIn">
-      <svg viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm7 0h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.94c0-1.18-.02-2.7-1.64-2.7-1.65 0-1.9 1.29-1.9 2.62V21h-4V9.75Z"/></svg>
-    </a>
-    <a href="https://github.com/harshrajdebug" aria-label="GitHub">
-      <svg viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
-    </a>
-    <a href="mailto:harshrajdebug@gmail.com" aria-label="Email">
-      <svg viewBox="0 0 24 24" width="30" height="30"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 5.5h18v13H3z M3 6l9 7 9-7"/></svg>
-    </a>
-  </span>
-  <nav class="foot-links" aria-label="Footer">
-    <a href="#top" data-top>Home</a>
-    <a href="#about">About</a>
-    <a href="harsh-raj-resume.pdf">Resume</a>
-  </nav>
-</footer>
-
-<script src="main.js?v=5"></script>
 </body>
 </html>
