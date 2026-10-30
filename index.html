@@ -1,94 +1,105 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>harsh raj</title>
-<meta name="description" content="Harsh Raj hunts the bugs that hide in Kubernetes control planes and fixes them upstream.">
-<link rel="canonical" href="https://harshrajdebug.in/">
-<meta property="og:title" content="harsh raj">
-<meta property="og:description" content="Kubernetes control planes, policy engines, upstream fixes.">
-<meta property="og:url" content="https://harshrajdebug.in/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="theme-color" content="#000000">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ff4fa8'/%3E%3C/svg%3E">
-<style>
-  :root { color-scheme: dark; --bg: #000; --ink: #fff; --dim: #b8b8b8; --hot: #ff4fa8; }
-  html { background: var(--bg); }
-  body {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: 3rem 1.25rem 4rem;
-    font: 1.3rem/1.55 Verdana, Geneva, Tahoma, sans-serif;
-    color: var(--ink);
-    background: var(--bg);
-    -webkit-text-size-adjust: 100%;
-  }
-  h1 { color: var(--hot); font-size: 3.4rem; line-height: 1.1; margin: 0 0 1.4rem; letter-spacing: -0.02em; }
-  h2 { font-size: 1.6rem; margin: 2.2rem 0 0.8rem; }
-  h2 span { color: var(--dim); font-weight: normal; font-size: 1.1rem; }
-  p { margin: 0 0 1.2rem; }
-  ul { margin: 0 0 1.2rem; padding-left: 1.6rem; }
-  li { margin: 0 0 0.35rem; }
-  a { color: var(--hot); text-decoration: underline; text-underline-offset: 0.15em; }
-  a:hover { color: var(--ink); }
-  .dim { color: var(--dim); }
-  ::selection { background: var(--hot); color: #000; }
-  @media (max-width: 480px) {
-    body { font-size: 1.1rem; padding-top: 2.25rem; }
-    h1 { font-size: 2.6rem; }
-    h2 { font-size: 1.4rem; }
-  }
-</style>
-</head>
-<body>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" href="element.css">
+    <title>Harsh Raj</title>
+    <meta name="description" content="Harsh Raj works on Kubernetes control planes: controllers, schedulers, admission and policy engines, and fixes them upstream.">
+    <link rel="canonical" href="https://harshrajdebug.in/">
+  </head>
+  <body>
+    <header>
+      <g-row>
+        <g-col>
+          <h1>Harsh Raj</h1>
+          <h4>Kubernetes Control Planes, Policy Engines, Upstream Fixes</h4>
+        </g-col>
+      </g-row>
+    </header>
 
-<h1>harsh raj</h1>
 
-<p>i hunt the bugs that hide in kubernetes control planes: controllers, schedulers, admission and policy engines. then i reproduce them, prove them, and fix them upstream</p>
+    <h2>Upstream</h2>
 
-<p>somewhere between a debugger and a field reporter, i go after the failure modes that only show up once a cluster is actually running</p>
+    <p>
+      <a href="https://github.com/kyverno/kyverno/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">Kyverno</a> - 6 merged. One MutatingPolicy could <a href="https://github.com/kyverno/kyverno/pull/17620">panic the admission webhook</a>, and the CLI <a href="https://github.com/kyverno/kyverno/pull/17608">passed namespaced policies it never evaluated</a>.
+    </p>
 
-<h2>merged <span>(17)</span></h2>
-<ul>
-  <li><a href="https://github.com/kyverno/kyverno/pull/17620">kyverno</a> - one mutating policy could panic the admission webhook</li>
-  <li><a href="https://github.com/kgateway-dev/kgateway/pull/14760">kgateway</a> - spiffe, ip and email identities were checked as dns names, so every connection got a 503</li>
-  <li><a href="https://github.com/pipe-cd/pipecd/pull/7440">pipecd</a> - cancelling a terraform stage left the remote state lock held</li>
-  <li><a href="https://github.com/pipe-cd/pipecd/pull/7412">pipecd</a> - ecs rollbacks reported synced while the old revision kept running</li>
-  <li><a href="https://github.com/volcano-sh/volcano/pull/6057">volcano</a> - one config typo crash-looped the controller manager</li>
-  <li><a href="https://github.com/kedacore/keda/pull/8193">keda</a> - the external scaler leaked pooled grpc connections</li>
-  <li><a href="https://github.com/kubeflow/trainer/pull/4155">kubeflow</a> - jobs with invalid names were accepted but could never run</li>
-  <li><a href="https://github.com/prowler-cloud/prowler/pull/13191">prowler</a> - a security group open to the whole internet, split in two halves, went unflagged</li>
-  <li><a href="https://github.com/search?q=author%3Aharshrajdebug+is%3Apr+is%3Amerged&amp;type=pullrequests">all of them</a></li>
-</ul>
+    <p>
+      <a href="https://github.com/pipe-cd/pipecd/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">PipeCD</a> - 5 merged. ECS rollbacks that <a href="https://github.com/pipe-cd/pipecd/pull/7412">reported Synced on the old revision</a>, and cancelled Terraform stages that <a href="https://github.com/pipe-cd/pipecd/pull/7440">left the state lock held</a>.
+    </p>
 
-<h2>in review <span>(21)</span></h2>
-<ul>
-  <li><a href="https://github.com/pipe-cd/pipecd/pull/7443">pipecd</a> - restarting piped mid-deployment cancelled it into a rollback</li>
-  <li><a href="https://github.com/volcano-sh/volcano/pull/6046">volcano</a> - gang reclaim evicting the same job forever</li>
-  <li><a href="https://github.com/kubeflow/trainer/pull/4293">kubeflow</a> - jobs that pass admission but whose pods can never start</li>
-  <li><a href="https://github.com/kubeedge/kubeedge/pull/7307">kubeedge</a> - offline edge nodes throwing away tokens that were still valid</li>
-  <li><a href="https://github.com/search?q=author%3Aharshrajdebug+is%3Apr+is%3Aopen&amp;type=pullrequests">the rest</a></li>
-</ul>
+    <p>
+      <a href="https://github.com/kedacore/keda/pulls?q=is%3Apr+author%3Aharshrajdebug+is%3Amerged">KEDA</a> - 2 merged. The external scaler <a href="https://github.com/kedacore/keda/pull/8193">leaked pooled gRPC connections</a>.
+    </p>
 
-<h2>built</h2>
-<ul>
-  <li><a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard</a> - an admission webhook that only lets a pod in when its images are signed</li>
-  <li><a href="https://github.com/harshrajdebug/aws-misconfig-scanner">aws-misconfig-scanner</a> - a read-only aws scanner, 32 checks mapped to cis</li>
-  <li><a href="https://github.com/harshrajdebug/phishnet">phishnet</a> - explainable, real-time phishing detection</li>
-</ul>
+    <p>
+      <a href="https://github.com/volcano-sh/volcano/pulls?q=is%3Apr+author%3Aharshrajdebug">Volcano</a> - One config typo <a href="https://github.com/volcano-sh/volcano/pull/6057">crash-looped the controller manager</a>.
+    </p>
 
-<h2>lately</h2>
-<p>the gap between what a control plane accepts and what it can actually run, and the places where a tool's offline answer disagrees with the cluster's</p>
+    <p>
+      <a href="https://github.com/kubeflow/trainer/pulls?q=is%3Apr+author%3Aharshrajdebug">Kubeflow Trainer</a> - Jobs with invalid names were <a href="https://github.com/kubeflow/trainer/pull/4155">accepted but could never run</a>.
+    </p>
 
-<h2>connect</h2>
-<ul>
-  <li>email <span class="dim">harshrajdebug@gmail.com</span></li>
-  <li><a href="https://github.com/harshrajdebug">github</a></li>
-  <li><a href="https://www.linkedin.com/in/harsh2789">linkedin</a></li>
-  <li><a href="harsh-raj-resume.pdf">resume</a></li>
-</ul>
+    <p>
+      <a href="https://github.com/kgateway-dev/kgateway/pulls?q=is%3Apr+author%3Aharshrajdebug">kgateway</a> - SPIFFE, IP and email SANs were <a href="https://github.com/kgateway-dev/kgateway/pull/14760">matched as DNS names</a>, so every connection got a 503.
+    </p>
 
-</body>
+    <p>
+      <a href="https://github.com/prowler-cloud/prowler/pulls?q=is%3Apr+author%3Aharshrajdebug">Prowler</a> - A security group open to the whole internet, split into two halves, <a href="https://github.com/prowler-cloud/prowler/pull/13191">went unflagged</a>.
+      <br><small>(17 merged across 7 projects, 21 more in review - <a href="https://github.com/search?q=author%3Aharshrajdebug+is%3Apr+is%3Amerged&amp;type=pullrequests">see them all</a>)</small>
+    </p>
+
+    <h2>Built</h2>
+
+    <p>
+      <a href="https://github.com/harshrajdebug/sigstore-guard">sigstore-guard</a> - An admission webhook that only lets a pod in when its images are signed by a signer you trust.
+    </p>
+
+    <p>
+      <a href="https://github.com/harshrajdebug/aws-misconfig-scanner">aws-misconfig-scanner</a> - A read-only AWS scanner with 32 checks mapped to CIS and Security Hub, tested against a live account.
+    </p>
+
+    <p>
+      <a href="https://github.com/harshrajdebug/phishnet">PhishNet</a> - A cross-modal attention model for explainable, real-time phishing detection.
+    </p>
+
+    <h2>Contact</h2>
+
+    <g-row>
+      <g-col>
+        Email
+      </g-col>
+      <g-col>
+        harshrajdebug (at) gmail.com
+      </g-col>
+    </g-row>
+
+    <g-row>
+      <g-col>
+        Github
+      </g-col>
+      <g-col>
+        <a href="https://github.com/harshrajdebug">@harshrajdebug</a>
+      </g-col>
+    </g-row>
+
+    <g-row>
+      <g-col>
+        LinkedIn
+      </g-col>
+      <g-col>
+        <a href="https://www.linkedin.com/in/harsh2789">harsh2789</a>
+      </g-col>
+    </g-row>
+
+    <g-row>
+      <g-col>
+        Resume
+      </g-col>
+      <g-col>
+        <a href="harsh-raj-resume.pdf">PDF</a>
+      </g-col>
+    </g-row>
+  </body>
 </html>
